@@ -1,26 +1,126 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+import {window, workspace, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument, MarkdownString, WorkspaceConfiguration} from 'vscode';
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-hanzi-counter" is now active!');
+// this method is called when your extension is activated. activation is
+// controlled by the activation events defined in package.json
+export function activate(ctx: ExtensionContext) {
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vscode-hanzi-counter.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from vscode-hanzi-counter!');
-	});
+    // create a new word counter
+    let wordCounter = new WordCounter(workspace.getConfiguration());
+    let controller = new WordCounterController(wordCounter);
 
-	context.subscriptions.push(disposable);
+    // add to a list of disposables which are disposed when this extension
+    // is deactivated again.
+    ctx.subscriptions.push(controller);
+    ctx.subscriptions.push(wordCounter);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+function compileTemplateFunction(template: string): [string[], Function] {
+    let statementMatchResult = template.match(/^[ \n]*\((.*?)\) *=>[ \n]*{(.*)}[ \n]*$/);
+    let expressionMatchResult = template.match(/^[ \n]*\((.*?)\) *=>[ \n]*(.*)[ \n]*$/);
+    let parameters: string[];
+    let functionBody: string;
+    if (statementMatchResult){
+        parameters = statementMatchResult[1].split(',').map(s => s.trim());
+        functionBody = statementMatchResult[2];
+    } else if (expressionMatchResult){
+        parameters = expressionMatchResult[1].split(',').map(s => s.trim());
+        functionBody = 'return ' + expressionMatchResult[2];
+    } else {
+        throw new Error('template is not a valid arrow function');
+    }
+    return [parameters, new Function(...parameters, functionBody)];
+}
+
+class WordCounter {
+
+    private readonly _counterRegex: Map<string, RegExp>;
+
+    private readonly _statusBarTemplate: Function;
+    private readonly _tooltipTemplate: Function;
+    private readonly _clickedTooltipTemplate: Function;
+
+    private readonly _statusBarKeys: string[];
+    private readonly _tooltipKeys: string[];
+    private readonly _clickedTooltipKeys: string[];
+
+    private readonly _statusBarItem: StatusBarItem;
+
+    constructor(configuration: WorkspaceConfiguration) {
+        const counterRegexString = new Map(Object.entries(
+            configuration.get('vscode-hanzi-counter.counterRegex') as object
+        ));
+        this._counterRegex = new Map();
+        for (let k in counterRegexString){
+            this._counterRegex.set(k, new RegExp(counterRegexString.get(k), 'gu'));
+        }
+
+        [this._statusBarKeys, this._statusBarTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.statusBarTemplate') || '');
+        [this._tooltipKeys, this._tooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.tooltipTemplate') || '');
+        [this._clickedTooltipKeys, this._clickedTooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.clickedTooltipTemplate') || '');
+
+        this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 105); // left of text attributes(ln, col, spaces, encoding, etc)
+    }
+
+    public updateWordCount() {
+
+        // Get the current text editor
+        let editor = window.activeTextEditor;
+        if (!editor) {
+            this._statusBarItem.hide();
+            return;
+        }
+
+        let doc = editor.document;
+
+        let wordCount = this._getWordCount(doc, /\p{L}+/gu);
+
+        // Update the status bar
+        this._statusBarItem.text = wordCount !== 1 ? `$(pencil) ${wordCount} Words` : '$(pencil) 1 Word';
+        let ms = new MarkdownString("<img src='file://D:/work/green_magenta.png'></img>");
+        ms.isTrusted = true;
+        ms.supportHtml = true;
+        this._statusBarItem.tooltip = ms;
+        this._statusBarItem.show();
+    }
+
+    public _getWordCount(doc: TextDocument, regex: RegExp): number {
+        let docContent = doc.getText();
+
+        let wordCount = (docContent.match(regex) || []).length;
+
+        return wordCount;
+    }
+
+    public dispose() {
+        this._statusBarItem.dispose();
+    }
+}
+
+class WordCounterController {
+
+    private _wordCounter: WordCounter;
+    private _disposable: Disposable;
+
+    constructor(wordCounter: WordCounter) {
+        this._wordCounter = wordCounter;
+        this._wordCounter.updateWordCount();
+
+        // subscribe to selection change and editor activation events
+        let subscriptions: Disposable[] = [];
+        window.onDidChangeTextEditorSelection(this._onEvent, this, subscriptions);
+        window.onDidChangeActiveTextEditor(this._onEvent, this, subscriptions);
+
+        // create a combined disposable from both event subscriptions
+        this._disposable = Disposable.from(...subscriptions);
+    }
+
+    private _onEvent(event: any) {
+        console.log(event);
+        this._wordCounter.updateWordCount();
+    }
+
+    public dispose() {
+        this._disposable.dispose();
+    }
+}

@@ -1,6 +1,6 @@
 {
   "name": "vscode-hanzi-counter",
-  "displayName": "vscode-hanzi-counter",
+  "displayName": "Hanzi Counter",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -10,8 +10,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-hanzi-counter.helloWorld"
-  ],
+		"onLanguage:markdown"
+	],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -19,7 +19,39 @@
         "command": "vscode-hanzi-counter.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Hanzi Counter",
+      "properties": {
+        "vscode-hanzi-counter.counterRegex": {
+          "type": "object",
+          "scope": "language-overridable",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {"hanzi": "\\p{L}+"},
+          "description": "Regex for matching each type of words or characters to count."
+        },
+        "vscode-hanzi-counter.statusBarTemplate": {
+          "type": "string",
+          "scope": "language-overridable",
+          "default": "()=>'status'",
+          "description": "Template of status bar text."
+        },
+        "vscode-hanzi-counter.tooltipTemplate": {
+          "type": "string",
+          "scope": "language-overridable",
+          "default": "()=>'tooltip'",
+          "description": "Template of status bar tooltip text."
+        },
+        "vscode-hanzi-counter.clickedTooltipTemplate": {
+          "type": "string",
+          "scope": "language-overridable",
+          "default": "()=>'clicked'",
+          "description": "Template of status bar tooltip text when clicked."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
