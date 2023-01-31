@@ -22,9 +22,15 @@ function compileTemplateFunction(template: string): [string[], Function] {
     let functionBody: string;
     if (statementMatchResult){
         parameters = statementMatchResult[1].split(',').map(s => s.trim());
+        if (parameters.length === 1 && parameters[0].length === 0){
+            parameters = [];
+        }
         functionBody = statementMatchResult[2];
     } else if (expressionMatchResult){
         parameters = expressionMatchResult[1].split(',').map(s => s.trim());
+        if (parameters.length === 1 && parameters[0].length === 0){
+            parameters = [];
+        }
         functionBody = 'return ' + expressionMatchResult[2];
     } else {
         throw new Error('template is not a valid arrow function');
@@ -55,9 +61,9 @@ class WordCounter {
             this._counterRegex.set(k, new RegExp(counterRegexString.get(k), 'gu'));
         }
 
-        [this._statusBarKeys, this._statusBarTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.statusBarTemplate') || '');
-        [this._tooltipKeys, this._tooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.tooltipTemplate') || '');
-        [this._clickedTooltipKeys, this._clickedTooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.clickedTooltipTemplate') || '');
+        [this._statusBarKeys, this._statusBarTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.statusBarTemplate') ?? '');
+        [this._tooltipKeys, this._tooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.tooltipTemplate') ?? '');
+        [this._clickedTooltipKeys, this._clickedTooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.clickedTooltipTemplate') ?? '');
 
         this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 105); // left of text attributes(ln, col, spaces, encoding, etc)
     }
@@ -73,14 +79,12 @@ class WordCounter {
 
         let doc = editor.document;
 
-        let wordCount = this._getWordCount(doc, /\p{L}+/gu);
+        let args = this._statusBarKeys.map(key => 
+            this._getWordCount(doc, this._counterRegex.get(key) ?? (()=>{throw new Error('undefined counter regex key');})())
+        );
 
         // Update the status bar
-        this._statusBarItem.text = wordCount !== 1 ? `$(pencil) ${wordCount} Words` : '$(pencil) 1 Word';
-        let ms = new MarkdownString("<img src='file://D:/work/green_magenta.png'></img>");
-        ms.isTrusted = true;
-        ms.supportHtml = true;
-        this._statusBarItem.tooltip = ms;
+        this._statusBarItem.text = this._statusBarTemplate(...args);
         this._statusBarItem.show();
     }
 
