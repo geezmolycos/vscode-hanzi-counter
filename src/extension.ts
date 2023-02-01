@@ -3,7 +3,7 @@ import {window, workspace, commands, Disposable, ExtensionContext, StatusBarAlig
 
 // this method is called when your extension is activated. activation is
 // controlled by the activation events defined in package.json
-export function activate(ctx: ExtensionContext) {
+export function activate(context: ExtensionContext) {
 
     // create a new word counter
     let wordCounter = new WordCounter(workspace.getConfiguration());
@@ -11,8 +11,14 @@ export function activate(ctx: ExtensionContext) {
 
     // add to a list of disposables which are disposed when this extension
     // is deactivated again.
-    ctx.subscriptions.push(controller);
-    ctx.subscriptions.push(wordCounter);
+    context.subscriptions.push(controller);
+    context.subscriptions.push(wordCounter);
+
+    let disposable = commands.registerCommand('vscode-hanzi-counter.clickedTooltip', () => {
+        wordCounter.updateWordCount(true);
+	});
+
+	context.subscriptions.push(disposable);
 }
 
 function compileTemplateFunction(template: string): [string[], Function] {
@@ -66,9 +72,11 @@ class WordCounter {
         [this._clickedTooltipKeys, this._clickedTooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.clickedTooltipTemplate') ?? '');
 
         this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 105); // left of text attributes(ln, col, spaces, encoding, etc)
+        this._statusBarItem.name = 'Hanzi counter';
+        this._statusBarItem.command = 'vscode-hanzi-counter.clickedTooltip';
     }
 
-    public updateWordCount() {
+    public updateWordCount(clicked = false) {
 
         // Get the current text editor
         let editor = window.activeTextEditor;
@@ -79,12 +87,26 @@ class WordCounter {
 
         let doc = editor.document;
 
-        let args = this._statusBarKeys.map(key => 
-            this._getWordCount(doc, this._counterRegex.get(key) ?? (()=>{throw new Error('undefined counter regex key');})())
-        );
+        let cachedKeys = new Map(); // cache same keys for different templates
+        let [statusBarArgs, tooltipArgs] = [this._statusBarKeys, clicked ? this._clickedTooltipKeys : this._tooltipKeys].map(ks => ks.map(key => {
+            if (cachedKeys.has(key)){
+                return cachedKeys.get(key);
+            } else {
+                let regex = this._counterRegex.get(key);
+                if (regex === undefined){
+                    throw new Error('undefined counter regex key');
+                }
+                let count = this._getWordCount(doc, regex);
+                cachedKeys.set(key, count);
+            }
+        }));
 
         // Update the status bar
-        this._statusBarItem.text = this._statusBarTemplate(...args);
+        this._statusBarItem.text = this._statusBarTemplate(...statusBarArgs);
+        let ms = new MarkdownString((clicked ? this._clickedTooltipTemplate : this._tooltipTemplate)(...tooltipArgs));
+        ms.isTrusted = true;
+        ms.supportHtml = true;
+        this._statusBarItem.tooltip = ms;
         this._statusBarItem.show();
     }
 
@@ -120,7 +142,6 @@ class WordCounterController {
     }
 
     private _onEvent(event: any) {
-        console.log(event);
         this._wordCounter.updateWordCount();
     }
 

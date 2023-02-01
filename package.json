@@ -16,8 +16,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-hanzi-counter.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-hanzi-counter.clickedTooltip",
+        "title": "Hanzi counter show detailed"
       }
     ],
     "configuration": {
@@ -41,7 +41,7 @@
         "vscode-hanzi-counter.tooltipTemplate": {
           "type": "string",
           "scope": "language-overridable",
-          "default": "()=>'tooltip'",
+          "default": "()=>'tooltip[more](command:vscode-hanzi-counter.clickedTooltip)'",
           "description": "Template of status bar tooltip text."
         },
         "vscode-hanzi-counter.clickedTooltipTemplate": {
