@@ -35,7 +35,7 @@
         "vscode-hanzi-counter.statusBarTemplate": {
           "type": "string",
           "scope": "language-overridable",
-          "default": "()=>'$(pencil) status'",
+          "default": "(hanzi)=>`$(pencil) ${hanzi} words`",
           "description": "Template of status bar text."
         },
         "vscode-hanzi-counter.tooltipTemplate": {

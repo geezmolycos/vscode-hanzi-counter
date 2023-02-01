@@ -63,8 +63,8 @@ class WordCounter {
             configuration.get('vscode-hanzi-counter.counterRegex') as object
         ));
         this._counterRegex = new Map();
-        for (let k in counterRegexString){
-            this._counterRegex.set(k, new RegExp(counterRegexString.get(k), 'gu'));
+        for (let [k, v] of counterRegexString){
+            this._counterRegex.set(k, new RegExp(v, 'gu'));
         }
 
         [this._statusBarKeys, this._statusBarTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.statusBarTemplate') ?? '');
@@ -72,8 +72,7 @@ class WordCounter {
         [this._clickedTooltipKeys, this._clickedTooltipTemplate] = compileTemplateFunction(configuration.get<string>('vscode-hanzi-counter.clickedTooltipTemplate') ?? '');
 
         this._statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 105); // left of text attributes(ln, col, spaces, encoding, etc)
-        this._statusBarItem.name = 'Hanzi counter';
-        this._statusBarItem.command = 'vscode-hanzi-counter.clickedTooltip';
+        this._statusBarItem.name = 'Hanzi Counter';
     }
 
     public updateWordCount(clicked = false) {
@@ -98,6 +97,7 @@ class WordCounter {
                 }
                 let count = this._getWordCount(doc, regex);
                 cachedKeys.set(key, count);
+                return count;
             }
         }));
 
