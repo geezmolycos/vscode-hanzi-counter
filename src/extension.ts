@@ -1,5 +1,5 @@
 
-import {window, workspace, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument, MarkdownString, WorkspaceConfiguration} from 'vscode';
+import {window, workspace, commands, Disposable, ExtensionContext, StatusBarAlignment, StatusBarItem, TextDocument, MarkdownString, WorkspaceConfiguration, TextEditor} from 'vscode';
 
 // this method is called when your extension is activated. activation is
 // controlled by the activation events defined in package.json
@@ -78,15 +78,13 @@ class WordCounter {
     public updateWordCount(clicked = false) {
 
         // Get the current text editor
-        let editor = window.activeTextEditor;
+        const editor = window.activeTextEditor;
         if (!editor) {
             this._statusBarItem.hide();
             return;
         }
 
-        let doc = editor.document;
-
-        let cachedKeys = new Map(); // cache same keys for different templates
+        let cachedKeys = new Map(); // cache common keys for different templates
         let [statusBarArgs, tooltipArgs] = [this._statusBarKeys, clicked ? this._clickedTooltipKeys : this._tooltipKeys].map(ks => ks.map(key => {
             if (cachedKeys.has(key)){
                 return cachedKeys.get(key);
@@ -95,7 +93,7 @@ class WordCounter {
                 if (regex === undefined){
                     throw new Error('undefined counter regex key');
                 }
-                let count = this._getWordCount(doc, regex);
+                let count = this._getWordCount(editor, regex);
                 cachedKeys.set(key, count);
                 return count;
             }
@@ -106,15 +104,19 @@ class WordCounter {
         let ms = new MarkdownString((clicked ? this._clickedTooltipTemplate : this._tooltipTemplate)(...tooltipArgs));
         ms.isTrusted = true;
         ms.supportHtml = true;
+        ms.supportThemeIcons = true;
         this._statusBarItem.tooltip = ms;
         this._statusBarItem.show();
     }
 
-    public _getWordCount(doc: TextDocument, regex: RegExp): number {
-        let docContent = doc.getText();
-
+    public _getWordCount(editor: TextEditor, regex: RegExp): number {
+        let docContent;
+        if (editor.selection.isEmpty) {
+            docContent = editor.document.getText()
+        } else {
+            docContent = editor.document.getText(editor.selection);
+        }
         let wordCount = (docContent.match(regex) || []).length;
-
         return wordCount;
     }
 

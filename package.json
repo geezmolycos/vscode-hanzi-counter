@@ -29,26 +29,31 @@
           "additionalProperties": {
             "type": "string"
           },
-          "default": {"hanzi": "\\p{L}+"},
+          "default": {
+            "word": "[\\p{L}\\p{Pc}]+",
+            "letter": "\\p{L}",
+            "character": ".",
+            "nonascii": "\\P{ASCII}"
+          },
           "description": "Regex for matching each type of words or characters to count."
         },
         "vscode-hanzi-counter.statusBarTemplate": {
           "type": "string",
           "scope": "language-overridable",
-          "default": "(hanzi)=>`$(pencil) ${hanzi} words`",
-          "description": "Template of status bar text."
+          "default": "(character)=>`$(pencil) 共 ${character} 字符`",
+          "description": "A Javascript arrow function that returns text to be shown on the status bar. Valid parameters are keys of `#vscode-hanzi-counter.counterRegex#`."
         },
         "vscode-hanzi-counter.tooltipTemplate": {
           "type": "string",
           "scope": "language-overridable",
-          "default": "()=>'tooltip[more](command:vscode-hanzi-counter.clickedTooltip)'",
-          "description": "Template of status bar tooltip text."
+          "default": "(word, character)=>`|||\\n|-|-:|\\n|单词数：|${word}|\\n|总字符数：|${character}|\\n\\n[$(chevron-down) 展开](command:vscode-hanzi-counter.clickedTooltip)`",
+          "description": "A Javascript arrow function that returns text to be shown on the status bar item's tooltip. Valid parameters are keys of `#vscode-hanzi-counter.counterRegex#`."
         },
         "vscode-hanzi-counter.clickedTooltipTemplate": {
           "type": "string",
           "scope": "language-overridable",
-          "default": "()=>'clicked'",
-          "description": "Template of status bar tooltip text when clicked."
+          "default": "(word, nonascii, character)=>`|||\\n|-|-:|\\n|单词数：|${word}|\\n|非 ASCII 字符数：|${nonascii}|\\n|总字符数：|${character}|`",
+          "description": "A Javascript arrow function that returns text to be shown on the status bar. Valid parameters are keys of `#vscode-hanzi-counter.counterRegex#`."
         }
       }
     }
