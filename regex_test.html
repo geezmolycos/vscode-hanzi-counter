@@ -1,0 +1,77 @@
+<html>
+<body>
+<script>
+function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
+(()=>{
+let string_to_be_matched = makeid(10000000);
+let count;
+let before = window.performance.now();
+count = 0;
+for (let ch = 0; ch < string_to_be_matched.length; ++ch){
+    if (string_to_be_matched[ch] === 'a'){
+        ++count;
+    }
+}
+let after = window.performance.now();
+document.write(after - before);
+document.write("<br>");
+document.write(count);
+document.write("<br>");
+})();
+(()=>{
+let string_to_be_matched = makeid(10000000);
+let count;
+let before = window.performance.now();
+count = 0;
+for (let ch of string_to_be_matched){
+    if (ch === 'a'){
+        ++count;
+    }
+}
+let after = window.performance.now();
+document.write(after - before);
+document.write("<br>");
+document.write(count);
+document.write("<br>");
+})();
+(()=>{
+let string_to_be_matched = makeid(10000000);
+let count;
+let before = window.performance.now();
+count = 0;
+for (let ch of string_to_be_matched){
+    if (ch.match(/^a$/u)){
+        ++count;
+    }
+}
+let after = window.performance.now();
+document.write(after - before);
+document.write("<br>");
+document.write(count);
+document.write("<br>");
+})();
+(()=>{
+let string_to_be_matched = makeid(10000000);
+let count;
+let before = window.performance.now();
+count = 0;
+count = string_to_be_matched.match(/a/gu).length;
+let after = window.performance.now();
+document.write(after - before);
+document.write("<br>");
+document.write(count);
+document.write("<br>");
+})();
+</script>
+</body>
+</html>
