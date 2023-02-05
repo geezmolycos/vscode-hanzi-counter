@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-		"onLanguage:markdown"
+		"onStartupFinished"
 	],
   "main": "./out/extension.js",
   "contributes": {
@@ -23,9 +23,32 @@
     "configuration": {
       "title": "Hanzi Counter",
       "properties": {
+        "vscode-hanzi-counter.enabled": {
+          "type": "boolean",
+          "scope": "language-overridable",
+          "order": 1,
+          "default": true,
+          "description": "Show counter on status bar."
+        },
+        "vscode-hanzi-counter.alignment": {
+          "type": "string",
+          "scope": "window",
+          "order": 2,
+          "enum": ["left", "right"],
+          "default": "right",
+          "description": "Place status bar item to left or right."
+        },
+        "vscode-hanzi-counter.priority": {
+          "type": "number",
+          "scope": "window",
+          "order": 3,
+          "default": 105,
+          "description": "Status bar item priority."
+        },
         "vscode-hanzi-counter.counterRegex": {
           "type": "object",
-          "scope": "language-overridable",
+          "scope": "window",
+          "order": 10,
           "additionalProperties": {
             "type": "string"
           },
@@ -35,7 +58,7 @@
             "character": ".",
             "nonascii": "\\P{ASCII}",
             "han": "(?=\\p{scx=Han})(?=\\p{L}).",
-            "han_punct": "\\p{scx=Han}|\\p{P}|\\p{S}|\\p{N}",
+            "han_punct": "(?=\\p{scx=Han}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{N}).",
             "utf8_1": "[\\u{0000}-\\u{007f}]",
             "utf8_2": "[\\u{0080}-\\u{07ff}]",
             "utf8_3": "[\\u{0800}-\\u{ffff}]",
@@ -46,19 +69,22 @@
         "vscode-hanzi-counter.statusBarTemplate": {
           "type": "string",
           "scope": "language-overridable",
+          "order": 11,
           "default": "(character)=>`$(pencil) 共 ${character} 字符`",
           "description": "A Javascript arrow function that returns text to be shown on the status bar. Valid parameters are keys of `#vscode-hanzi-counter.counterRegex#`."
         },
         "vscode-hanzi-counter.tooltipTemplate": {
           "type": "string",
           "scope": "language-overridable",
+          "order": 12,
           "default": "(word, character)=>`|||\\n|-|-:|\\n|单词数：|${word}|\\n|总字符数：|${character}|\\n\\n[$(chevron-down) 展开](command:vscode-hanzi-counter.clickedTooltip)`",
           "description": "A Javascript arrow function that returns text to be shown on the status bar item's tooltip. Valid parameters are keys of `#vscode-hanzi-counter.counterRegex#`."
         },
         "vscode-hanzi-counter.clickedTooltipTemplate": {
           "type": "string",
           "scope": "language-overridable",
-          "default": "(word, character, nonascii, utf8_1, utf8_2, utf8_3, utf8_4, han, han_punct)=>{return `|||\\n|-|-:|\\n|单词数：|${word}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han_punct}|\\n|非 ASCII 字符数：|${nonascii}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|总字符数：|${character}|`;}",
+          "order": 13,
+          "default": "(word, character, nonascii, utf8_1, utf8_2, utf8_3, utf8_4, han, han_punct)=>{return `|||\\n|-|-:|\\n|单词数：|${word}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han + han_punct}|\\n|非 ASCII 字符数：|${nonascii}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|总字符数：|${character}|`;}",
           "description": "A Javascript arrow function that returns text to be shown on the status bar. Valid parameters are keys of `#vscode-hanzi-counter.counterRegex#`."
         }
       }
