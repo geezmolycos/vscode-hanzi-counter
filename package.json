@@ -1,8 +1,9 @@
 {
   "name": "vscode-hanzi-counter",
-  "displayName": "Hanzi Counter",
-  "description": "",
-  "version": "0.1.0",
+  "displayName": "Multi-purpose Hanzi and Word Counter",
+  "description": "多功能文档字数统计，支持中文，也可用正则表达式自定义要统计的内容。\n\nCustomizable word counter with great support of Chinese characters (Hanzi). Use custom regexs to match any character type that you want.",
+  "version": "0.1.1",
+  "publisher": "geezmolycos",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -23,28 +24,6 @@
     "configuration": {
       "title": "Hanzi Counter",
       "properties": {
-        "vscode-hanzi-counter.enabled": {
-          "type": "boolean",
-          "scope": "language-overridable",
-          "order": 1,
-          "default": true,
-          "description": "Show counter on status bar."
-        },
-        "vscode-hanzi-counter.alignment": {
-          "type": "string",
-          "scope": "window",
-          "order": 2,
-          "enum": ["left", "right"],
-          "default": "right",
-          "description": "Place status bar item to left or right."
-        },
-        "vscode-hanzi-counter.priority": {
-          "type": "number",
-          "scope": "window",
-          "order": 3,
-          "default": 105,
-          "description": "Status bar item priority."
-        },
         "vscode-hanzi-counter.counterRegex": {
           "type": "object",
           "scope": "window",
