@@ -3,7 +3,8 @@ import {
     window, workspace, commands,
     ExtensionContext, StatusBarItem, StatusBarAlignment,
     MarkdownString, WorkspaceConfiguration, TextEditor,
-    TextDocument, TextDocumentChangeEvent, TextDocumentContentChangeEvent
+    TextDocument, TextDocumentChangeEvent, TextDocumentContentChangeEvent,
+    EndOfLine
 } from 'vscode';
 
 // this method is called when your extension is activated. activation is
@@ -49,6 +50,36 @@ function compileTemplateFunction(template: string): [string[], Function] {
     return [parameters, new Function(...parameters, functionBody)];
 }
 
+function countSubstring(string: string, substring: string) {
+    let count = 0;
+    let pos = 0;
+    while (true){
+        pos = string.indexOf(substring, pos);
+        if (pos < 0){
+            break;
+        }
+        ++count;
+        pos += substring.length;
+    }
+    return count;
+}
+
+// simple unpack with splice won't work for very long arrays
+// https://stackoverflow.com/a/41466395
+function spliceArray(array: any[], index: number, insertedArray: any[]) {
+    var postArray = array.splice(index);
+    inPlacePush(array, insertedArray);
+    inPlacePush(array, postArray);
+
+    function inPlacePush(targetArray: any[], pushedArray: any[]) {
+        // Not using forEach for browser compatability
+        var pushedArrayLength = pushedArray.length;
+        for (var index = 0; index < pushedArrayLength; index++) {
+           targetArray.push(pushedArray[index]);
+       }
+    }
+}
+
 class CachedLineCount {
     private _lines: number[];
     private _sum: number;
@@ -68,7 +99,10 @@ class CachedLineCount {
     }
 
     public replace(start: number, end: number, newLineCounts: number[]){
-        let removed = this._lines.splice(start, end - start, ...newLineCounts);
+        // simple unpack with splice won't work for very long arrays
+        // https://stackoverflow.com/a/41466395
+        let removed = this._lines.splice(start, end - start);
+        spliceArray(this._lines, start, newLineCounts);
         let removedTotalCount = removed.reduce((a, b) => a + b, 0);
         this._sum -= removedTotalCount;
         let addedTotalCount = newLineCounts.reduce((a, b) => a + b, 0);
@@ -118,8 +152,32 @@ class DocumentCounter {
     }
 
     public onContentChange(event: TextDocumentContentChangeEvent){
-        console.log(event);
-        this.updateStatusBarItem();
+        let affectedLineStart = event.range.start.line;
+        let affectedLineEnd = event.range.end.line;
+        let eolString = new Map([
+            [EndOfLine.LF, '\n'], [EndOfLine.CRLF, '\r\n']
+        ]).get(this._document.eol);
+        if (eolString === undefined){
+            throw new Error('invalid document end of line');
+        }
+        let newTextLineCount = countSubstring(event.text, eolString) + 1;
+        for (let [regexName, lineCounts] of this._cachedLineCounts){
+            let regex = this._counter.regexes.get(regexName);
+            if (regex === undefined){
+                continue;
+            }
+            let lineCount = [];
+            for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
+                let line = this._document.lineAt(lineNumber);
+                let lineText = line.text;
+                let matchCount = (lineText.match(regex) ?? []).length;
+                lineCount.push(matchCount);
+            }
+            lineCounts.replace(affectedLineStart, affectedLineEnd + 1, lineCount);
+        }
+        if (window.activeTextEditor?.document === this._document){
+            this.updateStatusBarItem();
+        }
     }
 
     public getCount(regexName: string){
@@ -225,39 +283,43 @@ class CounterController {
         // subscribe to selection change and editor activation events
         let subscriptions: Disposable[] = [];
         workspace.onDidOpenTextDocument(this._onDidOpenTextDocument, this, subscriptions);
+        // remove cache when saved for possible de-sync
+        workspace.onDidSaveTextDocument(this._onDidOpenTextDocument, this, subscriptions);
         workspace.onDidCloseTextDocument(this._onDidCloseTextDocument, this, subscriptions);
         workspace.onDidChangeTextDocument(this._onDidChangeTextDocument, this, subscriptions);
-        window.onDidChangeTextEditorSelection(this._updateStatusBarItem, this, subscriptions);
         window.onDidChangeActiveTextEditor(this._updateStatusBarItem, this, subscriptions);
 
-        // some documents may be opened before we can register handler
+        // some documents may be opened before we can register event handler
         for (let document of workspace.textDocuments){
             this._onDidOpenTextDocument(document);
         }
+        // onDidChangeActiveTextEditor will not trigger when first open
+        this._updateStatusBarItem(null);
 
         // create a combined disposable from both event subscriptions
         this._disposable = Disposable.from(...subscriptions);
     }
 
     private _onDidOpenTextDocument(document: TextDocument) {
-        console.log(`open text document ${document.uri}`);
         this._documentCounters.set(document, new DocumentCounter(this._counter, document));
     }
     
     private _onDidCloseTextDocument(document: TextDocument) {
-        console.log(`close text document ${document.uri}`);
         this._documentCounters.delete(document);
     }
     
     private _onDidChangeTextDocument(event: TextDocumentChangeEvent) {
-        console.log(`change text document ${event.document.uri}`);
-        this._documentCounters.get(event.document)?.onContentChange(event.contentChanges[0]);
+        for (let change of event.contentChanges){
+            this._documentCounters.get(event.document)?.onContentChange(change);
+        }
     }
 
     private _updateStatusBarItem(event: any){
         let currentDocument = window.activeTextEditor?.document;
         if (currentDocument){
             this._documentCounters.get(currentDocument)?.updateStatusBarItem();
+        } else {
+            this._counter.changeStatusBarItem(false);
         }
     }
 
