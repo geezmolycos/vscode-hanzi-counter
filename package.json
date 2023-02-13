@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/geezmolycos/vscode-hanzi-counter",
   "license": "MIT",
-  "icon": "./images/icon.png",
+  "icon": "images/icon.png",
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
