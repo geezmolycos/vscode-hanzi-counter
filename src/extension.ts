@@ -38,27 +38,18 @@ export function activate(context: ExtensionContext) {
 	context.subscriptions.push(disposable);
 }
 
-function compileTemplateFunction(template: string): [string[], Function] {
-    let statementMatchResult = template.match(/^[ \n]*\((.*?)\) *=>[ \n]*{(.*)}[ \n]*$/);
-    let expressionMatchResult = template.match(/^[ \n]*\((.*?)\) *=>[ \n]*(.*)[ \n]*$/);
-    let parameters: string[];
+function compileTemplateFunction(parameters: string[], template: string): Function {
+    let statementMatchResult = template.match(/^\s*{(.*)}\s*$/);
+    let expressionMatchResult = template.match(/^\s*(.*)\s*$/);
     let functionBody: string;
     if (statementMatchResult){
-        parameters = statementMatchResult[1].split(',').map(s => s.trim());
-        if (parameters.length === 1 && parameters[0].length === 0){
-            parameters = [];
-        }
-        functionBody = statementMatchResult[2];
+        functionBody = statementMatchResult[1];
     } else if (expressionMatchResult){
-        parameters = expressionMatchResult[1].split(',').map(s => s.trim());
-        if (parameters.length === 1 && parameters[0].length === 0){
-            parameters = [];
-        }
-        functionBody = 'return ' + expressionMatchResult[2];
+        functionBody = 'return ' + expressionMatchResult[1];
     } else {
-        throw new Error('template is not a valid arrow function');
+        throw new Error('template is not a valid expression or code block');
     }
-    return [parameters, new Function(...parameters, functionBody)];
+    return new Function(...parameters, functionBody);
 }
 
 function countSubstring(string: string, substring: string) {
@@ -261,22 +252,19 @@ class DocumentCounter {
             return sum;
         };
 
-        let evalTemplate = (regexNames: string[], templateFunction: Function) =>
-            templateFunction(...regexNames.map(
-                s => cachedCounts.get(s) ?? cachedCounts.set(s, getCountOfRanges(s, ranges)).get(s)
-            ));
+        let templateArguments = this._counter.templateParameters.map(
+            s => cachedCounts.get(s) ?? cachedCounts.set(s, getCountOfRanges(s, ranges)).get(s)
+        );
 
         let statusBarTemplate = this._counter.templates.get(this._statusBarTemplateName);
         if (statusBarTemplate !== undefined){
-            let [statusBarRegexNames, statusBarTemplateFunction] = statusBarTemplate;
-            this._counter.updateStatusBarItem(evalTemplate(statusBarRegexNames, statusBarTemplateFunction), undefined);
+            this._counter.updateStatusBarItem(statusBarTemplate(...templateArguments), undefined);
         }
 
         tooltipTemplateName ??= this._tooltipTemplateName;
         let tooltipTemplate = this._counter.templates.get(tooltipTemplateName);
         if (tooltipTemplate !== undefined){
-            let [tooltipRegexNames, tooltipTemplateFunction] = tooltipTemplate;
-            this._counter.updateStatusBarItem(undefined, evalTemplate(tooltipRegexNames, tooltipTemplateFunction));
+            this._counter.updateStatusBarItem(undefined, tooltipTemplate(...templateArguments));
         }
     }
 }
@@ -284,7 +272,8 @@ class DocumentCounter {
 class Counter {
 
     public readonly regexes: Map<string, RegExp>;
-    public readonly templates: Map<string, [string[], Function]>;
+    public readonly templateParameters: string[];
+    public readonly templates: Map<string, Function>;
 
     private _statusBarItem: StatusBarItem;
 
@@ -293,8 +282,10 @@ class Counter {
             configuration.get('vscode-hanzi-counter.counter.regexes') as object
         ));
         this.regexes = new Map();
+        this.templateParameters = [];
         for (let [k, v] of regexStrings){
             this.regexes.set(k, new RegExp(v, 'gus'));
+            this.templateParameters.push(k);
         }
 
         const templateStrings = new Map(Object.entries(
@@ -302,7 +293,7 @@ class Counter {
         ));
         this.templates = new Map();
         for (let [k, v] of templateStrings){
-            this.templates.set(k, compileTemplateFunction(v));
+            this.templates.set(k, compileTemplateFunction(this.templateParameters, v));
         }
 
         this._statusBarItem = window.createStatusBarItem(

@@ -56,6 +56,7 @@
           "default": {
             "word": "[\\p{L}\\p{Pc}]+",
             "letter": "\\p{L}",
+            "nonwhite": "\\S",
             "character": ".",
             "nonascii": "\\P{ASCII}",
             "han": "(?=\\p{scx=Han})(?=\\p{L}).",
@@ -65,7 +66,7 @@
             "utf8_3": "[\\u{0800}-\\u{ffff}]",
             "utf8_4": "[\\u{10000}-\\u{10ffff}]"
           },
-          "description": "Regexes for matching each type of words or characters to count. With flags `gus`"
+          "description": "Regexes for matching each type of words or characters to count. Those items can be used in templates. With flags `gus`"
         },
         "vscode-hanzi-counter.counter.templates": {
           "type": "object",
@@ -75,11 +76,10 @@
             "type": "string"
           },
           "default": {
-            "statusBar": "(character)=>`$(pencil) 共 ${character} 字符`",
-            "tooltip": "(word, character)=>`|||\\n|-|-:|\\n|单词数：|${word}|\\n|总字符数：|${character}|\\n\\n[$(chevron-down) 展开](command:vscode-hanzi-counter.changeTooltip?%5B%22detailed%22%5D)`",
-            "detailed": "(word, character, nonascii, utf8_1, utf8_2, utf8_3, utf8_4, han, han_punct)=>{return `|||\\n|-|-:|\\n|单词数：|${word}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han + han_punct}|\\n|非 ASCII 字符数：|${nonascii}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|总字符数：|${character}|`;}"
+            "statusBar": "`$(pencil) 共 ${character} 字符`",
+            "tooltip": "`|||\\n|-|-:|\\n|单词数：|${word}|\\n|非 ASCII 字符数：|${nonascii}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han + han_punct}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|非空白字符数：|${nonwhite}|\\n|总字符数：|${character}|`"
           },
-          "markdownDescription": "Each item is a Javascript arrow function that returns text. Function parameters are keys of `#vscode-hanzi-counter.counter.regexes#`."
+          "markdownDescription": "Each item is a Javascript expression or code block that returns a string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables."
         },
         "vscode-hanzi-counter.template.statusBarTemplateName": {
           "type": "string",
