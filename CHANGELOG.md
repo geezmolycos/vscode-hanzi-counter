@@ -4,10 +4,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 ## TODO
 
-- 编写更清楚的readme
-- 加图标
 - 加设置项，也加入更多预设
-- bundle打包
 - 压缩後大小
 - 点击项目高亮匹配
 - 加中文的描述
