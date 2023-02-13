@@ -2,7 +2,19 @@
 
 All notable changes to the "vscode-hanzi-counter" extension will be documented in this file.
 
-## [Unreleased]
+## [1.0.0]
+
+- 为每个打开的文档建立一个DocumentCounter的实例，按行存储各正则表达式统计字数，提高性能
+  - 只在文件打开、保存时统计全文字数
+  - 修改时只统计修改部分的字数，并更新全文字数
+  - 在编辑字数很多的文件时，性能有显著提升
+- 修复了建立多个选区时字数统计只考虑第一个选区的问题
+- 增加启用禁用设置项，可以指定仅某语言下启用
+  - 例如可以仅在编辑markdown时显示统计字数
+- tooltip的模板可以添加任意个，使用链接切换
+  - 例如分别设置中文统计、日文统计、英文统计的tooltip模板，显示对应的内容
+
+## [0.1.1] - 2023-02-09
 
 - 缩减中文标点符号范围，缩减到Script_extensions为Han或Common，且分类为P、S、N的字符
 - 增加启用禁用、调节状态栏显示的设置

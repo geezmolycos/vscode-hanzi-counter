@@ -29,7 +29,7 @@
           "scope": "language-overridable",
           "order": 1,
           "default": true,
-          "description": "Show counter on status bar."
+          "description": "Show counter on status bar. This configuration is overridable by language."
         },
         "vscode-hanzi-counter.alignment": {
           "type": "string",
@@ -65,7 +65,7 @@
             "utf8_3": "[\\u{0800}-\\u{ffff}]",
             "utf8_4": "[\\u{10000}-\\u{10ffff}]"
           },
-          "description": "Regexes for matching each type of words or characters to count."
+          "description": "Regexes for matching each type of words or characters to count. With flags \"gus\""
         },
         "vscode-hanzi-counter.templates": {
           "type": "object",

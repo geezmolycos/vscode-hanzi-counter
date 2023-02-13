@@ -1,5 +1,5 @@
 import {
-    Disposable, Range,
+    Disposable, Range, Position,
     window, workspace, commands,
     ExtensionContext, StatusBarItem, StatusBarAlignment,
     MarkdownString, WorkspaceConfiguration, TextEditor,
@@ -95,7 +95,12 @@ class CachedLineCount {
     }
 
     public recalculateSum(){
-        this._sum = this._lines.reduce((a, b) => a + b, 0);
+        let sum = 0;
+        // for loop is faster than reduce
+        for (let i = 0; i < this._lines.length; ++i){
+            sum += this._lines[i];
+        }
+        this._sum = sum;
     }
 
     public replace(start: number, end: number, newLineCounts: number[]){
@@ -103,10 +108,24 @@ class CachedLineCount {
         // https://stackoverflow.com/a/41466395
         let removed = this._lines.splice(start, end - start);
         spliceArray(this._lines, start, newLineCounts);
-        let removedTotalCount = removed.reduce((a, b) => a + b, 0);
+        let removedTotalCount = 0;
+        for (let i = 0; i < removed.length; ++i){
+            removedTotalCount += removed[i];
+        }
         this._sum -= removedTotalCount;
-        let addedTotalCount = newLineCounts.reduce((a, b) => a + b, 0);
+        let addedTotalCount = 0;
+        for (let i = 0; i < newLineCounts.length; ++i){
+            addedTotalCount += newLineCounts[i];
+        }
         this._sum += addedTotalCount;
+    }
+
+    public getRangeSum(start: number, end: number){
+        let sum = 0;
+        for (let i = start; i < end; ++i){
+            sum += this._lines[i];
+        }
+        return sum;
     }
 }
 
@@ -135,16 +154,21 @@ class DocumentCounter {
         this._tooltipTemplateName = configuration.get('vscode-hanzi-counter.tooltipTemplateName') as string;
     }
 
+    private _getEOLString(){
+        return new Map([
+            [EndOfLine.LF, '\n'], [EndOfLine.CRLF, '\r\n']
+        ]).get(this._document.eol);
+    }
+
     public recalculateCount(regexName: string){
         // calculate and store count for each line
         let regex = this._counter.regexes.get(regexName);
-        if (!regex){
-            return;
+        if (regex === undefined){
+            throw new Error(`non-existent regex "${regexName}"`);
         }
         let lineCount = [];
         for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
-            let line = this._document.lineAt(lineNumber);
-            let lineText = line.text;
+            let lineText = this._document.getText(new Range(lineNumber, 0, lineNumber + 1, 0));
             let matchCount = (lineText.match(regex) ?? []).length;
             lineCount.push(matchCount);
         }
@@ -154,50 +178,83 @@ class DocumentCounter {
     public onContentChange(event: TextDocumentContentChangeEvent){
         let affectedLineStart = event.range.start.line;
         let affectedLineEnd = event.range.end.line;
-        let eolString = new Map([
-            [EndOfLine.LF, '\n'], [EndOfLine.CRLF, '\r\n']
-        ]).get(this._document.eol);
-        if (eolString === undefined){
+        let eOLString = this._getEOLString();
+        if (eOLString === undefined){
             throw new Error('invalid document end of line');
         }
-        let newTextLineCount = countSubstring(event.text, eolString) + 1;
+        let newTextLineCount = countSubstring(event.text, eOLString) + 1;
         for (let [regexName, lineCounts] of this._cachedLineCounts){
             let regex = this._counter.regexes.get(regexName);
             if (regex === undefined){
-                continue;
+                throw new Error(`non-existent regex "${regexName}"`);
             }
             let lineCount = [];
             for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
-                let line = this._document.lineAt(lineNumber);
-                let lineText = line.text;
+                let lineText = this._document.getText(new Range(lineNumber, 0, lineNumber + 1, 0));
                 let matchCount = (lineText.match(regex) ?? []).length;
                 lineCount.push(matchCount);
             }
             lineCounts.replace(affectedLineStart, affectedLineEnd + 1, lineCount);
         }
-        if (window.activeTextEditor?.document === this._document){
-            this.updateStatusBarItem();
-        }
     }
 
-    public getCount(regexName: string){
+    public getCount(regexName: string, range?: Range){
         if (!this._cachedLineCounts.has(regexName)){
             this.recalculateCount(regexName);
         }
-        return this._cachedLineCounts.get(regexName)?.getSum();
+        if (!range){
+            return this._cachedLineCounts.get(regexName)!.getSum();
+        } else {
+            let fullLineStart = range.start.character === 0 ? range.start.line : range.start.line + 1;
+            let fullLineEnd = range.end.line;
+            let partialBefore;
+            let partialAfter;
+            let fullLineCount;
+            if (fullLineEnd < fullLineStart){ // only single line
+                partialBefore = range;
+                partialAfter = new Range(range.end, range.end);
+                fullLineCount = 0;
+            } else {
+                partialBefore = new Range(range.start, new Position(fullLineStart, 0));
+                partialAfter = new Range(new Position(fullLineEnd, 0), range.end);
+                fullLineCount = this._cachedLineCounts.get(regexName)!.getRangeSum(fullLineStart, fullLineEnd);
+            }
+
+            let beforeText = this._document.getText(partialBefore);
+            let beforeCount = (beforeText.match(this._counter.regexes.get(regexName)!) ?? []).length;
+
+            let afterText = this._document.getText(partialAfter);
+            let afterCount = (afterText.match(this._counter.regexes.get(regexName)!) ?? []).length;
+
+            return beforeCount + fullLineCount + afterCount;
+        }
     }
 
-    public updateStatusBarItem(tooltipTemplateName?: string){
+    public updateStatusBarItem(tooltipTemplateName?: string, ranges?: readonly Range[]){
         if (!this._enabled){
             this._counter.changeStatusBarItem(false);
             return;
-        } else {
-            this._counter.changeStatusBarItem(true);
         }
+        this._counter.changeStatusBarItem(true);
+
+        let cachedCounts = new Map();
+
+        let getCountOfRanges = (regexName: string, ranges?: readonly Range[]) => {
+            if (ranges === undefined){
+                return this.getCount(regexName);
+            }
+            let sum = 0;
+            for (let range of ranges){
+                sum += this.getCount(regexName, range);
+            }
+            return sum;
+        };
 
         let evalTemplate = (regexNames: string[], templateFunction: Function) =>
-            templateFunction(...regexNames.map(s => this.getCount(s)));
-           
+            templateFunction(...regexNames.map(
+                s => cachedCounts.get(s) ?? cachedCounts.set(s, getCountOfRanges(s, ranges)).get(s)
+            ));
+
         let statusBarTemplate = this._counter.templates.get(this._statusBarTemplateName);
         if (statusBarTemplate !== undefined){
             let [statusBarRegexNames, statusBarTemplateFunction] = statusBarTemplate;
@@ -226,7 +283,7 @@ class Counter {
         ));
         this.regexes = new Map();
         for (let [k, v] of regexStrings){
-            this.regexes.set(k, new RegExp(v, 'gu'));
+            this.regexes.set(k, new RegExp(v, 'gus'));
         }
 
         const templateStrings = new Map(Object.entries(
@@ -288,6 +345,7 @@ class CounterController {
         workspace.onDidCloseTextDocument(this._onDidCloseTextDocument, this, subscriptions);
         workspace.onDidChangeTextDocument(this._onDidChangeTextDocument, this, subscriptions);
         window.onDidChangeActiveTextEditor(this._updateStatusBarItem, this, subscriptions);
+        window.onDidChangeTextEditorSelection(this._updateStatusBarItem, this, subscriptions);
 
         // some documents may be opened before we can register event handler
         for (let document of workspace.textDocuments){
@@ -312,12 +370,25 @@ class CounterController {
         for (let change of event.contentChanges){
             this._documentCounters.get(event.document)?.onContentChange(change);
         }
+        this._updateStatusBarItem(null);
     }
 
     private _updateStatusBarItem(event: any){
         let currentDocument = window.activeTextEditor?.document;
         if (currentDocument){
-            this._documentCounters.get(currentDocument)?.updateStatusBarItem();
+            let selections = window.activeTextEditor!.selections;
+            let allEmpty = true;
+            for (let selection of selections){ // handle multi-selection
+                if (!selection.isEmpty){
+                    allEmpty = false;
+                    break;
+                }
+            }
+            if (allEmpty){ // no text is selected
+                this._documentCounters.get(currentDocument)?.updateStatusBarItem();
+            } else {
+                this._documentCounters.get(currentDocument)?.updateStatusBarItem(undefined, selections);
+            }
         } else {
             this._counter.changeStatusBarItem(false);
         }
