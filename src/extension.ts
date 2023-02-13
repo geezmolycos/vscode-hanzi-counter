@@ -21,7 +21,18 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(counter);
 
     let disposable = commands.registerCommand('vscode-hanzi-counter.changeTooltip', (templateName) => {
-        console.log(templateName);
+        if (counter.templates.has(templateName)){
+            controller.changeTooltipTemplate(templateName);
+        } else {
+            window.showErrorMessage(
+                `Tooltip template "${templateName}" does not exist. Please change your command according to names in the configuration.`,
+                'Open settings'
+            ).then((yes) => {
+                if (yes){
+                    commands.executeCommand('workbench.action.openSettings', 'vscode-hanzi-counter');
+                }
+            });
+        }
 	});
 
 	context.subscriptions.push(disposable);
@@ -149,9 +160,9 @@ class DocumentCounter {
 
     public updateConfiguration(){
         let configuration = workspace.getConfiguration('', this._document);
-        this._enabled = configuration.get('vscode-hanzi-counter.enabled') as boolean;
-        this._statusBarTemplateName = configuration.get('vscode-hanzi-counter.statusBarTemplateName') as string;
-        this._tooltipTemplateName = configuration.get('vscode-hanzi-counter.tooltipTemplateName') as string;
+        this._enabled = configuration.get('vscode-hanzi-counter.statusBar.enabled') as boolean;
+        this._statusBarTemplateName = configuration.get('vscode-hanzi-counter.template.statusBarTemplateName') as string;
+        this._tooltipTemplateName = configuration.get('vscode-hanzi-counter.template.tooltipTemplateName') as string;
     }
 
     private _getEOLString(){
@@ -279,7 +290,7 @@ class Counter {
 
     constructor(configuration: WorkspaceConfiguration) {
         const regexStrings = new Map(Object.entries(
-            configuration.get('vscode-hanzi-counter.regexes') as object
+            configuration.get('vscode-hanzi-counter.counter.regexes') as object
         ));
         this.regexes = new Map();
         for (let [k, v] of regexStrings){
@@ -287,7 +298,7 @@ class Counter {
         }
 
         const templateStrings = new Map(Object.entries(
-            configuration.get('vscode-hanzi-counter.templates') as object
+            configuration.get('vscode-hanzi-counter.counter.templates') as object
         ));
         this.templates = new Map();
         for (let [k, v] of templateStrings){
@@ -295,9 +306,9 @@ class Counter {
         }
 
         this._statusBarItem = window.createStatusBarItem(
-            configuration.get('vscode-hanzi-counter.alignment') === 'left'
+            configuration.get('vscode-hanzi-counter.statusBar.alignment') === 'left'
                 ? StatusBarAlignment.Left : StatusBarAlignment.Right,
-            configuration.get('vscode-hanzi-counter.priority') ?? 105); // default left of text attributes(ln, col, spaces, encoding, etc)
+            configuration.get('vscode-hanzi-counter.statusBar.priority') ?? 105); // default left of text attributes(ln, col, spaces, encoding, etc)
         this._statusBarItem.name = 'Hanzi Counter';
     }
 
@@ -331,11 +342,14 @@ class CounterController {
 
     private _counter: Counter;
     private _documentCounters: Map<TextDocument, DocumentCounter>;
+    private _tooltipTemplateName: string | undefined;
     private _disposable: Disposable;
 
     constructor(counter: Counter) {
         this._counter = counter;
         this._documentCounters = new Map();
+
+        this._tooltipTemplateName = undefined;
 
         // subscribe to selection change and editor activation events
         let subscriptions: Disposable[] = [];
@@ -385,13 +399,18 @@ class CounterController {
                 }
             }
             if (allEmpty){ // no text is selected
-                this._documentCounters.get(currentDocument)?.updateStatusBarItem();
+                this._documentCounters.get(currentDocument)?.updateStatusBarItem(this._tooltipTemplateName);
             } else {
-                this._documentCounters.get(currentDocument)?.updateStatusBarItem(undefined, selections);
+                this._documentCounters.get(currentDocument)?.updateStatusBarItem(this._tooltipTemplateName, selections);
             }
         } else {
             this._counter.changeStatusBarItem(false);
         }
+    }
+
+    public changeTooltipTemplate(name: string){
+        this._tooltipTemplateName = name;
+        this._updateStatusBarItem(null);
     }
 
     public dispose() {

@@ -4,7 +4,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 ## [1.0.0]
 
-- 为每个打开的文档建立一个DocumentCounter的实例，按行存储各正则表达式统计字数，提高性能
+- 为每个打开的文档建立一个DocumentCounter的实例，按行缓存各正则表达式统计的字数，提高性能
   - 只在文件打开、保存时统计全文字数
   - 修改时只统计修改部分的字数，并更新全文字数
   - 在编辑字数很多的文件时，性能有显著提升
