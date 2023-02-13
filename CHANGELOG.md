@@ -6,10 +6,8 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 编写更清楚的readme
 - 加图标
-- 加github链接
 - 加设置项，也加入更多预设
 - bundle打包
-- license
 - 压缩後大小
 - 点击项目高亮匹配
 - 加中文的描述
@@ -25,6 +23,8 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
   - 例如可以仅在编辑markdown时显示统计字数
 - tooltip的模板可以添加任意个，使用链接切换
   - 例如分别设置中文统计、日文统计、英文统计的tooltip模板，显示对应的内容
+- 分离了源码文件，更改了vscode导入方式，更加方便维护
+- MIT License
 
 ## [0.1.1] - 2023-02-09
 

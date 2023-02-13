@@ -1,7 +1,7 @@
 {
   "name": "vscode-hanzi-counter",
   "displayName": "Multi-purpose Hanzi and Word Counter",
-  "description": "多功能文档字数统计，支持中文，也可用正则表达式自定义要统计的内容。\n\nCustomizable word counter with great support of Chinese characters (Hanzi). Use custom regexs to match any character type that you want.",
+  "description": "多功能文档字数统计，支持中文，支持选区统计，也可用正则表达式自定义要统计的内容。\n\nCustomizable word counter with great support of Chinese characters (Hanzi). Supports count in selection. Use custom regexs to match any character type that you want.",
   "version": "0.1.1",
   "publisher": "geezmolycos",
   "engines": {
@@ -13,6 +13,12 @@
   "activationEvents": [
 		"onStartupFinished"
 	],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geezmolycos/vscode-hanzi-counter"
+  },
+  "homepage": "https://github.com/geezmolycos/vscode-hanzi-counter",
+  "license": "MIT",
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -37,14 +43,14 @@
           "order": 2,
           "enum": ["left", "right"],
           "default": "right",
-          "description": "Place status bar item to left or right."
+          "description": "Place status bar item to left or right. Restart for changes to take effect."
         },
         "vscode-hanzi-counter.statusBar.priority": {
           "type": "number",
           "scope": "window",
           "order": 3,
           "default": 105,
-          "description": "Status bar item priority."
+          "description": "Status bar item priority. Restart for changes to take effect."
         },
         "vscode-hanzi-counter.counter.regexes": {
           "type": "object",
@@ -66,7 +72,7 @@
             "utf8_3": "[\\u{0800}-\\u{ffff}]",
             "utf8_4": "[\\u{10000}-\\u{10ffff}]"
           },
-          "description": "Regexes for matching each type of words or characters to count. Those items can be used in templates. With flags `gus`"
+          "description": "Regexes for matching each type of words or characters to count. Those items can be used in templates. With flags `gus`. Restart for changes to take effect."
         },
         "vscode-hanzi-counter.counter.templates": {
           "type": "object",
@@ -79,7 +85,7 @@
             "statusBar": "`$(pencil) 共 ${character} 字符`",
             "tooltip": "`|||\\n|-|-:|\\n|单词数：|${word}|\\n|非 ASCII 字符数：|${nonascii}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han + han_punct}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|非空白字符数：|${nonwhite}|\\n|总字符数：|${character}|`"
           },
-          "markdownDescription": "Each item is a Javascript expression or code block that returns a string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables."
+          "markdownDescription": "Each item is a Javascript expression or code block that returns a string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect."
         },
         "vscode-hanzi-counter.template.statusBarTemplateName": {
           "type": "string",
