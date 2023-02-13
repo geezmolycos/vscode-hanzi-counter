@@ -9,7 +9,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 点击项目高亮匹配
 - 加中文的描述
 
-## [1.0.0]
+## [1.0.0] - 2023-02-13
 
 - 为每个打开的文档建立一个DocumentCounter的实例，按行缓存各正则表达式统计的字数，提高性能
   - 只在文件打开、保存时统计全文字数
