@@ -122,7 +122,7 @@ export class DocumentCounter {
         let lineCount = [];
         for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
             let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
-            let matchCount = (lineText.match(regex) ?? []).length;
+            let matchCount = lineText.match(regex)?.length ?? 0;
             lineCount.push(matchCount);
         }
         this._cachedLineCounts.set(regexName, new CachedLineCount(lineCount));
@@ -144,7 +144,7 @@ export class DocumentCounter {
             let lineCount = [];
             for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
                 let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
-                let matchCount = (lineText.match(regex) ?? []).length;
+                let matchCount = lineText.match(regex)?.length ?? 0;
                 lineCount.push(matchCount);
             }
             lineCounts.replace(affectedLineStart, affectedLineEnd + 1, lineCount);
@@ -174,13 +174,24 @@ export class DocumentCounter {
             }
 
             let beforeText = this._document.getText(partialBefore);
-            let beforeCount = (beforeText.match(this._counter.regexes.get(regexName)!) ?? []).length;
+            let beforeCount = beforeText.match(this._counter.regexes.get(regexName)!)?.length ?? 0;
 
             let afterText = this._document.getText(partialAfter);
-            let afterCount = (afterText.match(this._counter.regexes.get(regexName)!) ?? []).length;
+            let afterCount = afterText.match(this._counter.regexes.get(regexName)!)?.length ?? 0;
 
             return beforeCount + fullLineCount + afterCount;
         }
+    }
+
+    public getCountOfRanges(regexName: string, ranges?: readonly vscode.Range[]){
+        if (ranges === undefined){
+            return this.getCount(regexName);
+        }
+        let sum = 0;
+        for (let range of ranges){
+            sum += this.getCount(regexName, range);
+        }
+        return sum;
     }
 
     public updateStatusBarItem(tooltipTemplateName?: string, ranges?: readonly vscode.Range[]){
@@ -192,19 +203,8 @@ export class DocumentCounter {
 
         let cachedCounts = new Map();
 
-        let getCountOfRanges = (regexName: string, ranges?: readonly vscode.Range[]) => {
-            if (ranges === undefined){
-                return this.getCount(regexName);
-            }
-            let sum = 0;
-            for (let range of ranges){
-                sum += this.getCount(regexName, range);
-            }
-            return sum;
-        };
-
         let templateArguments = this._counter.templateParameters.map(
-            s => cachedCounts.get(s) ?? cachedCounts.set(s, getCountOfRanges(s, ranges)).get(s)
+            s => cachedCounts.get(s) ?? cachedCounts.set(s, this.getCountOfRanges(s, ranges)).get(s)
         );
 
         let statusBarTemplate = this._counter.templates.get(this._statusBarTemplateName);

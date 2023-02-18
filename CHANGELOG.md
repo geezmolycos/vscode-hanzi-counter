@@ -5,9 +5,14 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 ## TODO
 
 - 加设置项，也加入更多预设
-- 压缩後大小
 - 点击项目高亮匹配
 - 加中文的描述
+- 加截图
+
+## [1.1.0]
+
+- 将正则表达式默认flags改成了`gu`，以方便配合高亮功能
+- 加入高亮指定正则匹配的功能，可以设置点击以后在文件中高亮此项的匹配
 
 ## [1.0.0] - 2023-02-13
 

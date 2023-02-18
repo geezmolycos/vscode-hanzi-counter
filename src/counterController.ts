@@ -24,8 +24,8 @@ export class CounterController {
         vscode.workspace.onDidSaveTextDocument(this._onDidOpenTextDocument, this, subscriptions);
         vscode.workspace.onDidCloseTextDocument(this._onDidCloseTextDocument, this, subscriptions);
         vscode.workspace.onDidChangeTextDocument(this._onDidChangeTextDocument, this, subscriptions);
-        vscode.window.onDidChangeActiveTextEditor(this._updateStatusBarItem, this, subscriptions);
-        vscode.window.onDidChangeTextEditorSelection(this._updateStatusBarItem, this, subscriptions);
+        vscode.window.onDidChangeActiveTextEditor(()=>{this._updateStatusBarItem();this._counter.removeHighlight();}, this, subscriptions);
+        vscode.window.onDidChangeTextEditorSelection(()=>{this._updateStatusBarItem();this._counter.removeHighlight();}, this, subscriptions);
 
         vscode.workspace.onDidChangeConfiguration(this._onDidChangeConfiguration, this, subscriptions);
 
@@ -53,6 +53,7 @@ export class CounterController {
             this._documentCounters.get(event.document)?.onContentChange(change);
         }
         this._updateStatusBarItem();
+        this._counter.removeHighlight();
     }
 
     private _updateDocumentCountersConfiguration(){
@@ -60,6 +61,7 @@ export class CounterController {
             documentCounter.updateConfiguration();
         }
         this._updateStatusBarItem();
+        this._counter.removeHighlight();
     }
 
     private _onDidChangeConfiguration(event: vscode.ConfigurationChangeEvent){
@@ -68,7 +70,7 @@ export class CounterController {
         }
     }
 
-    private _updateStatusBarItem(event?: any){
+    private _updateStatusBarItem(){
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
             let selections = vscode.window.activeTextEditor!.selections;
@@ -88,7 +90,7 @@ export class CounterController {
             this._counter.changeStatusBarItem(false);
         }
     }
-
+    
     public changeTooltipTemplate(name: string){
         this._tooltipTemplateName = name;
         this._updateStatusBarItem();
