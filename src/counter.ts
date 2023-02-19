@@ -1,6 +1,9 @@
 
 import * as vscode from 'vscode';
 
+const MAX_HIGHLIGHT_COUNT = 20000;
+const MAX_HIGHLIGHT_COUNT_VISIBLE = 20000;
+
 function compileTemplateFunction(parameters: string[], template: string): Function {
     let statementMatchResult = template.match(/^\s*{(.*)}\s*$/);
     let expressionMatchResult = template.match(/^\s*(.*)\s*$/);
@@ -32,7 +35,7 @@ export class Counter {
         this.regexes = new Map();
         this.templateParameters = [];
         for (let [k, v] of regexStrings){
-            this.regexes.set(k, new RegExp(v, 'gu'));
+            this.regexes.set(k, new RegExp(v, 'gus'));
             this.templateParameters.push(k);
         }
 
@@ -62,6 +65,8 @@ export class Counter {
                 || vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastLight
             ) ? '1px solid' : '1px dotted',
             'overviewRulerColor': new vscode.ThemeColor('editorOverviewRuler.findMatchForeground'),
+            // should 
+            'rangeBehavior': vscode.DecorationRangeBehavior.ClosedClosed
         });
     }
 
@@ -113,18 +118,35 @@ export class Counter {
             if (allEmpty){ // no text is selected
                 selectionRanges = [new vscode.Range(0, 0, currentDocument.lineCount, 0)]; // entire document
             }
-            let highlightRanges = [];
-            for (let selectionRange of selectionRanges){
-                let startOffset = currentDocument.offsetAt(selectionRange.start);
-                let text = currentDocument.getText(selectionRange);
-                for (let match of text.matchAll(regex)){
+            let highlightRanges: vscode.Range[] = [];
+            let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
+                let startOffset = currentDocument!.offsetAt(selectionRange.start);
+                let text = currentDocument!.getText(selectionRange);
+                for (let match of text.matchAll(regex!)){
                     let matchStartIndex = match.index!;
                     let matchEndIndex = match.index! + match[0].length;
                     let matchRange = new vscode.Range(
-                        currentDocument.positionAt(startOffset + matchStartIndex),
-                        currentDocument.positionAt(startOffset + matchEndIndex)    
+                        currentDocument!.positionAt(startOffset + matchStartIndex),
+                        currentDocument!.positionAt(startOffset + matchEndIndex)    
                     );
                     highlightRanges.push(matchRange);
+                    if (highlightRanges.length >= maxCount){
+                        // too many highlight ranges, give up
+                        return false;
+                    }
+                }
+                return true;
+            };
+            for (let selectionRange of selectionRanges){
+                addSelectionRangeHighlight(selectionRange, MAX_HIGHLIGHT_COUNT);
+            }
+            // consider visible regions
+            if (highlightRanges.length >= MAX_HIGHLIGHT_COUNT){
+                for (let visibleRange of vscode.window.activeTextEditor!.visibleRanges){
+                    let hasSpaceLeft = addSelectionRangeHighlight(visibleRange, MAX_HIGHLIGHT_COUNT + MAX_HIGHLIGHT_COUNT_VISIBLE);
+                    if (!hasSpaceLeft){
+                        break;
+                    }
                 }
             }
             this.setHighlight(highlightRanges);
