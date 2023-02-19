@@ -5,6 +5,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 ## TODO
 
 - 加设置项，也加入更多预设
+- 加入图形渲染的模板
 - 点击项目高亮匹配
 - 加中文的描述
 - 加截图

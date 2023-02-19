@@ -54,7 +54,14 @@ export class Counter {
         // create decoration type
         this._decorationType = vscode.window.createTextEditorDecorationType({
             // To be implemented
-            'backgroundColor': 'rgb(255, 0, 0)'
+            'backgroundColor': new vscode.ThemeColor('editor.findMatchHighlightBackground'),
+            'borderColor': new vscode.ThemeColor('editor.findMatchHighlightBorder'),
+            // https://github.com/microsoft/vscode/blob/3b4a151ea027219579234f1002f2c955ad2021ee/src/vs/editor/contrib/find/browser/findWidget.ts#L1400
+            'border': (
+                vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrast
+                || vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastLight
+            ) ? '1px solid' : '1px dotted',
+            'overviewRulerColor': new vscode.ThemeColor('editorOverviewRuler.findMatchForeground'),
         });
     }
 
