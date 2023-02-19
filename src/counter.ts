@@ -23,6 +23,7 @@ export class Counter {
     public readonly regexes: Map<string, RegExp>;
     public readonly templateParameters: string[];
     public readonly templates: Map<string, Function>;
+    public readonly templateEnvironment: object;
 
     private _statusBarItem: vscode.StatusBarItem;
     private _decorationType: vscode.TextEditorDecorationType;
@@ -46,6 +47,9 @@ export class Counter {
         for (let [k, v] of templateStrings){
             this.templates.set(k, compileTemplateFunction(this.templateParameters, v));
         }
+
+        // environment for template function to store variables
+        this.templateEnvironment = {};
 
         // create status bar item
         this._statusBarItem = vscode.window.createStatusBarItem(

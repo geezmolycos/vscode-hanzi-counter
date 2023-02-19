@@ -209,13 +209,13 @@ export class DocumentCounter {
 
         let statusBarTemplate = this._counter.templates.get(this._statusBarTemplateName);
         if (statusBarTemplate !== undefined){
-            this._counter.updateStatusBarItem(statusBarTemplate(...templateArguments), undefined);
+            this._counter.updateStatusBarItem(statusBarTemplate.apply(this._counter.templateEnvironment, templateArguments), undefined);
         }
 
         tooltipTemplateName ??= this._tooltipTemplateName;
         let tooltipTemplate = this._counter.templates.get(tooltipTemplateName);
         if (tooltipTemplate !== undefined){
-            this._counter.updateStatusBarItem(undefined, tooltipTemplate(...templateArguments));
+            this._counter.updateStatusBarItem(undefined, tooltipTemplate.apply(this._counter.templateEnvironment, templateArguments));
         }
     }
 }

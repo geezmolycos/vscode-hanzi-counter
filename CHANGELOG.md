@@ -6,7 +6,6 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 加设置项，也加入更多预设
 - 加入图形渲染的模板
-- 点击项目高亮匹配
 - 加中文的描述
 - 加截图
 - 设置正则的超时
@@ -15,6 +14,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 加入高亮指定正则匹配的指令，可以在模板中加入指令，点击以后在文件中高亮此项的匹配
   - 为了性能考虑，一次最多能高亮20000个区间，如果超过了20000个，再安排20000个到可视区间里
+- 给模板代码加入环境this，可以用来记录变量。比如预先生成的查找表就可以缓存到this中。
 
 ## [1.0.0] - 2023-02-13
 
