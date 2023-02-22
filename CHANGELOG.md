@@ -14,6 +14,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 加入高亮指定正则匹配的指令，可以在模板中加入指令，点击以后在文件中高亮此项的匹配
   - 为了性能考虑，一次最多能高亮20000个区间，如果超过了20000个，再安排20000个到可视区间里
+  - 可以一次高亮多种类型的文字，会使用多种颜色区分这些文字。例如可以把中文和中文标点分开高亮
 - 给模板代码加入环境this，可以用来记录变量。比如预先生成的查找表就可以缓存到this中。
 
 ## [1.0.0] - 2023-02-13
@@ -25,7 +26,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 修复了建立多个选区时字数统计只考虑第一个选区的问题
 - 增加启用禁用设置项，可以指定仅某语言下启用
   - 例如可以仅在编辑markdown时显示统计字数
-- tooltip的模板可以添加任意个，使用链接切换
+- tooltip的模板可以添加任意个，使用指令链接切换
   - 例如分别设置中文统计、日文统计、英文统计的tooltip模板，显示对应的内容
 - 分离了源码文件，更改了vscode导入方式，更加方便维护
 - MIT License

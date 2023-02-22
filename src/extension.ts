@@ -36,18 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(changeTooltip);
 
     let showFind = vscode.commands.registerCommand('vscode-hanzi-counter.highlight', (regexName) => {
-        if (counter.regexes.has(regexName)){
-            counter.setHighlightRegex(regexName);
-        } else {
-            vscode.window.showErrorMessage(
-                `Regex "${regexName}" does not exist. Please change your command according to names in the configuration.`,
-                'Open settings'
-            ).then((yes) => {
-                if (yes){
-                    vscode.commands.executeCommand('workbench.action.openSettings', 'vscode-hanzi-counter');
-                }
-            });
-        }
+        counter.setHighlightRegex(regexName);
 	});
 
 	context.subscriptions.push(showFind);

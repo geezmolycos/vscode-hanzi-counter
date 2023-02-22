@@ -23,10 +23,10 @@ export class Counter {
     public readonly regexes: Map<string, RegExp>;
     public readonly templateParameters: string[];
     public readonly templates: Map<string, Function>;
-    public readonly templateEnvironment: object;
+    public readonly templateEnvironment: {[key: string]: any};
 
     private _statusBarItem: vscode.StatusBarItem;
-    private _decorationType: vscode.TextEditorDecorationType;
+    private _decorationTypes: vscode.TextEditorDecorationType[];
 
     constructor(configuration: vscode.WorkspaceConfiguration) {
         // read and parse configurations
@@ -49,7 +49,7 @@ export class Counter {
         }
 
         // environment for template function to store variables
-        this.templateEnvironment = {};
+        this.templateEnvironment = {'regexes': this.regexes, 'templatesParameters': this.templateParameters, 'templates': this.templates};
 
         // create status bar item
         this._statusBarItem = vscode.window.createStatusBarItem(
@@ -59,19 +59,22 @@ export class Counter {
         this._statusBarItem.name = 'Hanzi Counter';
 
         // create decoration type
-        this._decorationType = vscode.window.createTextEditorDecorationType({
+        this._decorationTypes = [
+            ['editor.findMatchHighlightBackground', 'editor.findMatchHighlightBorder', 'editorOverviewRuler.findMatchForeground'],
+            ['diffEditor.removedTextBackground', 'diffEditor.removedTextBorder', 'diffEditorOverview.removedForeground'],
+        ].map(([background, border, ruler]) => vscode.window.createTextEditorDecorationType({
             // To be implemented
-            'backgroundColor': new vscode.ThemeColor('editor.findMatchHighlightBackground'),
-            'borderColor': new vscode.ThemeColor('editor.findMatchHighlightBorder'),
+            'backgroundColor': new vscode.ThemeColor(background),
+            'borderColor': new vscode.ThemeColor(border),
             // https://github.com/microsoft/vscode/blob/3b4a151ea027219579234f1002f2c955ad2021ee/src/vs/editor/contrib/find/browser/findWidget.ts#L1400
             'border': (
                 vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrast
                 || vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastLight
             ) ? '1px solid' : '1px dotted',
-            'overviewRulerColor': new vscode.ThemeColor('editorOverviewRuler.findMatchForeground'),
-            // should 
+            'overviewRulerColor': new vscode.ThemeColor(ruler),
+            // should
             'rangeBehavior': vscode.DecorationRangeBehavior.ClosedClosed
-        });
+        }));
     }
 
     public changeStatusBarItem(show: boolean){
@@ -95,19 +98,21 @@ export class Counter {
         }
     }
 
-    public setHighlight(ranges: readonly vscode.Range[]){
-        vscode.window.activeTextEditor?.setDecorations(this._decorationType, ranges);
+    public setHighlight(ranges: readonly vscode.Range[], typeNumber: number){
+        vscode.window.activeTextEditor?.setDecorations(this._decorationTypes[typeNumber], ranges);
     }
 
     public removeHighlight(){
-        this.setHighlight([]);
+        for (let i = 0; i < this._decorationTypes.length; ++i){
+            this.setHighlight([], i);
+        }
     }
 
-    public setHighlightRegex(regexName: string){
-        let regex = this.regexes.get(regexName);
-        if (regex === undefined){
-            throw new Error(`no regex with name ${regexName}`);
+    public setHighlightRegex(regexNames: string | [string]){
+        if (typeof regexNames === 'string'){
+            regexNames = [regexNames];
         }
+        let regexes = regexNames.map((r) => this.regexes.get(r));
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
             let selections = vscode.window.activeTextEditor!.selections;
@@ -122,38 +127,44 @@ export class Counter {
             if (allEmpty){ // no text is selected
                 selectionRanges = [new vscode.Range(0, 0, currentDocument.lineCount, 0)]; // entire document
             }
-            let highlightRanges: vscode.Range[] = [];
-            let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
-                let startOffset = currentDocument!.offsetAt(selectionRange.start);
-                let text = currentDocument!.getText(selectionRange);
-                for (let match of text.matchAll(regex!)){
-                    let matchStartIndex = match.index!;
-                    let matchEndIndex = match.index! + match[0].length;
-                    let matchRange = new vscode.Range(
-                        currentDocument!.positionAt(startOffset + matchStartIndex),
-                        currentDocument!.positionAt(startOffset + matchEndIndex)    
-                    );
-                    highlightRanges.push(matchRange);
-                    if (highlightRanges.length >= maxCount){
-                        // too many highlight ranges, give up
-                        return false;
+            for (let i = 0; i < regexes.length; ++i){
+                let regex = regexes[i];
+                if (regex === undefined){
+                    continue;
+                }
+                let highlightRanges: vscode.Range[] = [];
+                let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
+                    let startOffset = currentDocument!.offsetAt(selectionRange.start);
+                    let text = currentDocument!.getText(selectionRange);
+                    for (let match of text.matchAll(regex!)){
+                        let matchStartIndex = match.index!;
+                        let matchEndIndex = match.index! + match[0].length;
+                        let matchRange = new vscode.Range(
+                            currentDocument!.positionAt(startOffset + matchStartIndex),
+                            currentDocument!.positionAt(startOffset + matchEndIndex)    
+                        );
+                        highlightRanges.push(matchRange);
+                        if (highlightRanges.length >= maxCount){
+                            // too many highlight ranges, give up
+                            return false;
+                        }
+                    }
+                    return true;
+                };
+                for (let selectionRange of selectionRanges){
+                    addSelectionRangeHighlight(selectionRange, MAX_HIGHLIGHT_COUNT);
+                }
+                // consider visible regions
+                if (highlightRanges.length >= MAX_HIGHLIGHT_COUNT){
+                    for (let visibleRange of vscode.window.activeTextEditor!.visibleRanges){
+                        let hasSpaceLeft = addSelectionRangeHighlight(visibleRange, MAX_HIGHLIGHT_COUNT + MAX_HIGHLIGHT_COUNT_VISIBLE);
+                        if (!hasSpaceLeft){
+                            break;
+                        }
                     }
                 }
-                return true;
-            };
-            for (let selectionRange of selectionRanges){
-                addSelectionRangeHighlight(selectionRange, MAX_HIGHLIGHT_COUNT);
+                this.setHighlight(highlightRanges, i);
             }
-            // consider visible regions
-            if (highlightRanges.length >= MAX_HIGHLIGHT_COUNT){
-                for (let visibleRange of vscode.window.activeTextEditor!.visibleRanges){
-                    let hasSpaceLeft = addSelectionRangeHighlight(visibleRange, MAX_HIGHLIGHT_COUNT + MAX_HIGHLIGHT_COUNT_VISIBLE);
-                    if (!hasSpaceLeft){
-                        break;
-                    }
-                }
-            }
-            this.setHighlight(highlightRanges);
         }
     }
 

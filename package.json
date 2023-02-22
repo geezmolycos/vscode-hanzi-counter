@@ -88,9 +88,9 @@
           },
           "default": {
             "statusBar": "`$(pencil) 共 ${character} 字符`",
-            "tooltip": "`|||\\n|-|-:|\\n|单词数：|${word}|\\n|非 ASCII 字符数：|${nonascii}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han + han_punct}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|非空白字符数：|${nonwhite}|\\n|总字符数：|${character}|\\n[点](command:vscode-hanzi-counter.highlight?%5B%22nonwhite%22%5D)`"
+            "tooltip": "{const n=(n,o,c)=>`|${n}|`+(o<1e3?`[${o}](command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent(c)}%5D)`:`${o}`);return\"|||\\n|-|-:|\\n\"+n(\"单词数:\",word,'[\"han_punct\",\"han\"]')+n(\"非ASCII字符数:\",nonascii,'\"nonascii\"')+n(\"中文字数:\",han,'\"han\"')}"
           },
-          "markdownDescription": "Each item is a Javascript expression or code block that returns a string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect."
+          "markdownDescription": "Each item is a Javascript expression or code block that returns a markdown string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect."
         },
         "vscode-hanzi-counter.template.statusBarTemplateName": {
           "type": "string",

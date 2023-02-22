@@ -206,7 +206,11 @@ export class DocumentCounter {
         let templateArguments = this._counter.templateParameters.map(
             s => cachedCounts.get(s) ?? cachedCounts.set(s, this.getCountOfRanges(s, ranges)).get(s)
         );
-
+        let countMap = new Map(this._counter.templateParameters.map(
+            (e, i) => [e, templateArguments[i]]
+        ));
+        
+        this._counter.templateEnvironment.count = countMap; // pass counts as map to environment for advanced scripting
         let statusBarTemplate = this._counter.templates.get(this._statusBarTemplateName);
         if (statusBarTemplate !== undefined){
             this._counter.updateStatusBarItem(statusBarTemplate.apply(this._counter.templateEnvironment, templateArguments), undefined);
