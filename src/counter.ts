@@ -60,10 +60,15 @@ export class Counter {
 
         // create decoration type
         this._decorationTypes = [
-            ['editor.findMatchHighlightBackground', 'editor.findMatchHighlightBorder', 'editorOverviewRuler.findMatchForeground'],
-            ['diffEditor.removedTextBackground', 'diffEditor.removedTextBorder', 'diffEditorOverview.removedForeground'],
-        ].map(([background, border, ruler]) => vscode.window.createTextEditorDecorationType({
-            // To be implemented
+            ['', 'editor.findMatchHighlightBackground', 'editor.findMatchHighlightBorder', 'editorOverviewRuler.findMatchForeground'],
+            ['charts.foreground', 'charts.red', 'charts.lines', 'charts.red'],
+            ['charts.foreground', 'charts.orange', 'charts.lines', 'charts.orange'],
+            ['charts.foreground', 'charts.yellow', 'charts.lines', 'charts.yellow'],
+            ['charts.foreground', 'charts.green', 'charts.lines', 'charts.green'],
+            ['charts.foreground', 'charts.blue', 'charts.lines', 'charts.blue'],
+            ['charts.foreground', 'charts.purple', 'charts.lines', 'charts.purple'],
+        ].map(([color, background, border, ruler]) => vscode.window.createTextEditorDecorationType({
+            'color': color ? new vscode.ThemeColor(color) : undefined,
             'backgroundColor': new vscode.ThemeColor(background),
             'borderColor': new vscode.ThemeColor(border),
             // https://github.com/microsoft/vscode/blob/3b4a151ea027219579234f1002f2c955ad2021ee/src/vs/editor/contrib/find/browser/findWidget.ts#L1400
@@ -108,11 +113,19 @@ export class Counter {
         }
     }
 
-    public setHighlightRegex(regexNames: string | [string]){
+    public setHighlightRegex(regexNames: string | string[] | string[][]){
+        this.removeHighlight();
+        let regexGroupList: string[][];
         if (typeof regexNames === 'string'){
-            regexNames = [regexNames];
+            regexGroupList = [[regexNames]];
+        } else if (regexNames.length === 0){
+            return;
+        } else if (typeof regexNames[0] === 'string'){
+            regexGroupList = regexNames.map(_ => [_]) as string[][];
+        } else {
+            regexGroupList = regexNames as string[][];
         }
-        let regexes = regexNames.map((r) => this.regexes.get(r));
+        let regexGroups = regexGroupList.map(rList => rList.map(r => this.regexes.get(r)));
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
             let selections = vscode.window.activeTextEditor!.selections;
@@ -127,39 +140,44 @@ export class Counter {
             if (allEmpty){ // no text is selected
                 selectionRanges = [new vscode.Range(0, 0, currentDocument.lineCount, 0)]; // entire document
             }
-            for (let i = 0; i < regexes.length; ++i){
-                let regex = regexes[i];
-                if (regex === undefined){
+            for (let i = 0; i < regexGroups.length; ++i){
+                let regexes = regexGroups[i];
+                if (!regexes){
                     continue;
                 }
                 let highlightRanges: vscode.Range[] = [];
-                let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
-                    let startOffset = currentDocument!.offsetAt(selectionRange.start);
-                    let text = currentDocument!.getText(selectionRange);
-                    for (let match of text.matchAll(regex!)){
-                        let matchStartIndex = match.index!;
-                        let matchEndIndex = match.index! + match[0].length;
-                        let matchRange = new vscode.Range(
-                            currentDocument!.positionAt(startOffset + matchStartIndex),
-                            currentDocument!.positionAt(startOffset + matchEndIndex)    
-                        );
-                        highlightRanges.push(matchRange);
-                        if (highlightRanges.length >= maxCount){
-                            // too many highlight ranges, give up
-                            return false;
-                        }
+                for (let regex of regexes){
+                    if (!regex){
+                        continue;
                     }
-                    return true;
-                };
-                for (let selectionRange of selectionRanges){
-                    addSelectionRangeHighlight(selectionRange, MAX_HIGHLIGHT_COUNT);
-                }
-                // consider visible regions
-                if (highlightRanges.length >= MAX_HIGHLIGHT_COUNT){
-                    for (let visibleRange of vscode.window.activeTextEditor!.visibleRanges){
-                        let hasSpaceLeft = addSelectionRangeHighlight(visibleRange, MAX_HIGHLIGHT_COUNT + MAX_HIGHLIGHT_COUNT_VISIBLE);
-                        if (!hasSpaceLeft){
-                            break;
+                    let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
+                        let startOffset = currentDocument!.offsetAt(selectionRange.start);
+                        let text = currentDocument!.getText(selectionRange);
+                        for (let match of text.matchAll(regex!)){
+                            let matchStartIndex = match.index!;
+                            let matchEndIndex = match.index! + match[0].length;
+                            let matchRange = new vscode.Range(
+                                currentDocument!.positionAt(startOffset + matchStartIndex),
+                                currentDocument!.positionAt(startOffset + matchEndIndex)    
+                            );
+                            highlightRanges.push(matchRange);
+                            if (highlightRanges.length >= maxCount){
+                                // too many highlight ranges, give up
+                                return false;
+                            }
+                        }
+                        return true;
+                    };
+                    for (let selectionRange of selectionRanges){
+                        addSelectionRangeHighlight(selectionRange, MAX_HIGHLIGHT_COUNT);
+                    }
+                    // consider visible regions
+                    if (highlightRanges.length >= MAX_HIGHLIGHT_COUNT){
+                        for (let visibleRange of vscode.window.activeTextEditor!.visibleRanges){
+                            let hasSpaceLeft = addSelectionRangeHighlight(visibleRange, MAX_HIGHLIGHT_COUNT + MAX_HIGHLIGHT_COUNT_VISIBLE);
+                            if (!hasSpaceLeft){
+                                break;
+                            }
                         }
                     }
                 }
