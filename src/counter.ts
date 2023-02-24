@@ -60,22 +60,19 @@ export class Counter {
 
         // create decoration type
         this._decorationTypes = [
-            ['', 'editor.findMatchHighlightBackground', 'editor.findMatchHighlightBorder', 'editorOverviewRuler.findMatchForeground'],
-            ['charts.foreground', 'charts.red', 'charts.lines', 'charts.red'],
-            ['charts.foreground', 'charts.orange', 'charts.lines', 'charts.orange'],
-            ['charts.foreground', 'charts.yellow', 'charts.lines', 'charts.yellow'],
-            ['charts.foreground', 'charts.green', 'charts.lines', 'charts.green'],
-            ['charts.foreground', 'charts.blue', 'charts.lines', 'charts.blue'],
-            ['charts.foreground', 'charts.purple', 'charts.lines', 'charts.purple'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.foreground', 'charts.foreground'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.red', 'charts.red'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.orange', 'charts.orange'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.yellow', 'charts.yellow'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.green', 'charts.green'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.blue', 'charts.blue'],
+            ['', 'editor.findMatchHighlightBackground', 'charts.purple', 'charts.purple'],
         ].map(([color, background, border, ruler]) => vscode.window.createTextEditorDecorationType({
             'color': color ? new vscode.ThemeColor(color) : undefined,
             'backgroundColor': new vscode.ThemeColor(background),
             'borderColor': new vscode.ThemeColor(border),
             // https://github.com/microsoft/vscode/blob/3b4a151ea027219579234f1002f2c955ad2021ee/src/vs/editor/contrib/find/browser/findWidget.ts#L1400
-            'border': (
-                vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrast
-                || vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastLight
-            ) ? '1px solid' : '1px dotted',
+            'border': '2px dotted',
             'overviewRulerColor': new vscode.ThemeColor(ruler),
             // should
             'rangeBehavior': vscode.DecorationRangeBehavior.ClosedClosed
