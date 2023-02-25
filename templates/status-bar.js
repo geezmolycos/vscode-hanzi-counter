@@ -11,11 +11,11 @@
             ['detailed-zh', 'Detl', '详']
         ],
         'generate': function (current, lang=2){
-            return '&#124; ' + this.list.map(e => 
+            return '<div align="center">[ ' + this.list.map(e => 
                 e[0] !== current
-                ? `[${e[lang]}](command:vscode-hanzi-counter.changeTooltip?%5B%22${e[0]}%22%5D)`
+                ? `<a href="command:vscode-hanzi-counter.changeTooltip?%5B%22${e[0]}%22%5D">${e[lang]}</a>`
                 : `${e[lang]}`
-            ).join(' &#124; ') + ' &#124;';
+            ).join(' &#124; ') + ' ]</div>';
         }
     };
     return `$(pencil) Chars: ${character}`;

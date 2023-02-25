@@ -10,6 +10,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 加截图
 - 设置正则的超时
 - 加入统计字数扩展比较和在线工具比较
+- 加配置编写教程
 
 ## [1.2.0]
 
