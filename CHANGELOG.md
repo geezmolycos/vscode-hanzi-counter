@@ -10,6 +10,10 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 加截图
 - 设置正则的超时
 
+## [1.2.0]
+
+- 加入日语、(朝鲜语/韩语)匹配规则
+
 ## [1.1.0] - 2023-02-24
 
 - 加入高亮指定正则匹配的指令，可以在模板中加入指令，点击以后在文件中高亮此项的匹配
