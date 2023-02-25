@@ -1,5 +1,5 @@
 {
-    /* ==> 英文状态栏 English Status bar <== */
+    /* ==> 中文状态栏 Chinese Status bar <== */
     // provide switching pages functions in tooltip
     this.hlitMax = 10000;
     this.tableRow = (str, value, hlit, display) => (
@@ -13,13 +13,13 @@
     );
     this.paging = this.paging || {
         'list': [
-            ['western', 'West'],
-            ['western-detailed', 'More'],
-            ['zh-hans', 'Chs'],
-            ['zh-hans-detailed', 'More'],
-            ['zh-hant', 'Cht'],
-            ['jp', 'JP'],
-            ['kr', 'KR'],
+            ['western', '西'],
+            ['western-detailed', '详'],
+            ['zh-hans', '简'],
+            ['zh-hans-detailed', '详'],
+            ['zh-hant', '繁'],
+            ['jp', '日'],
+            ['kr', '韩'],
         ],
         'generate': function (current, lang=1){
             return '<div align="center">[ ' + this.list.map(e => 
@@ -29,5 +29,5 @@
             ).join(' &#124; ') + ' ]</div>';
         }
     };
-    return `$(pencil) Chars: ${character}`;
+    return `$(pencil) ${character} 字符`;
 }

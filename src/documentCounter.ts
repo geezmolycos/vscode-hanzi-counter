@@ -103,8 +103,18 @@ export class DocumentCounter {
     public updateConfiguration(){
         let configuration = vscode.workspace.getConfiguration('', this._document);
         this._enabled = configuration.get('vscode-hanzi-counter.statusBar.enabled') as boolean;
-        this._statusBarTemplateName = configuration.get('vscode-hanzi-counter.template.statusBarTemplateName') as string;
-        this._tooltipTemplateName = configuration.get('vscode-hanzi-counter.template.tooltipTemplateName') as string;
+        let statusBarTemplateName = configuration.get('vscode-hanzi-counter.template.statusBarTemplateName') as string;
+        if (this._counter.templates.has(statusBarTemplateName)){
+            this._statusBarTemplateName = statusBarTemplateName;
+        } else {
+            throw new Error(`template "${statusBarTemplateName}" does not exist`);
+        }
+        let tooltipTemplateName = configuration.get('vscode-hanzi-counter.template.tooltipTemplateName') as string;
+        if (this._counter.templates.has(tooltipTemplateName)){
+            this._tooltipTemplateName = tooltipTemplateName;
+        } else {
+            throw new Error(`template "${tooltipTemplateName}" does not exist`);
+        }
     }
 
     private _getEOLString(){
@@ -213,13 +223,29 @@ export class DocumentCounter {
         this._counter.templateEnvironment.count = countMap; // pass counts as map to environment for advanced scripting
         let statusBarTemplate = this._counter.templates.get(this._statusBarTemplateName);
         if (statusBarTemplate !== undefined){
-            this._counter.updateStatusBarItem(statusBarTemplate.apply(this._counter.templateEnvironment, templateArguments), undefined);
+            try {
+                this._counter.updateStatusBarItem(statusBarTemplate.apply(this._counter.templateEnvironment, templateArguments), undefined);
+            } catch (e){
+                if (e instanceof Error){
+                    vscode.window.showErrorMessage('Error happened when evaluating status bar template: ' + e.message);
+                } else {
+                    vscode.window.showErrorMessage('Error happened when evaluating status bar template');
+                }
+            }
         }
 
         tooltipTemplateName ??= this._tooltipTemplateName;
         let tooltipTemplate = this._counter.templates.get(tooltipTemplateName);
         if (tooltipTemplate !== undefined){
-            this._counter.updateStatusBarItem(undefined, tooltipTemplate.apply(this._counter.templateEnvironment, templateArguments));
+            try {
+                this._counter.updateStatusBarItem(undefined, tooltipTemplate.apply(this._counter.templateEnvironment, templateArguments));
+            } catch (e){
+                if (e instanceof Error){
+                    vscode.window.showErrorMessage('Error happened when evaluating tooltip template: ' + e.message);
+                } else {
+                    vscode.window.showErrorMessage('Error happened when evaluating tooltip template');
+                }
+            }
         }
     }
 }

@@ -16,8 +16,11 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 加入日语、(朝鲜语/韩语)匹配规则
 - 加入更多自带的匹配规则，涵盖 unicode 各 General Category，以便使用
-- 加入tooltip分页，主页显示设置链接，快速进入设置
+- 加入tooltip分页，功能概览页显示设置链接，快速进入设置
+  - 功能概览提供简要的说明和快速教程
 - 加入日语韩语简介
+- 现在找不到模板或者模板代码出错，会弹出错误提示
+- 更改高亮的风格，改成粗的下划线
 
 ## [1.1.0] - 2023-02-24
 

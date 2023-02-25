@@ -57,8 +57,16 @@ export class CounterController {
     }
 
     private _updateDocumentCountersConfiguration(){
-        for (let [document, documentCounter] of this._documentCounters){
-            documentCounter.updateConfiguration();
+        try {
+            for (let [document, documentCounter] of this._documentCounters){
+                documentCounter.updateConfiguration();
+            }
+        } catch (e){
+            if (e instanceof Error){
+                vscode.window.showErrorMessage(e.message);
+            } else {
+                vscode.window.showErrorMessage('Error happened when updating configuration');
+            }
         }
         this._updateStatusBarItem();
         this._counter.removeHighlight();

@@ -1,19 +1,29 @@
-{
-
-    const hlitMax = 10000;
-    const prefix = '<table width="100%"><tbody>';
-    const suffix = '</tbody></table>';
-    const line = (str, value, hlit) => ('<tr>' + `<td>${str}</td>` + (hlit && value < hlitMax ? `<td align="right"><a href="command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent(hlit)}%5D">${value}</a></td>` : `<td align="right">${value}</td>`) + '\n');
-    return prefix
-        + line('单词数:', word, '"word"')
-        + line('非ASCII字符数:', nonascii, '"nonascii"')
-        + line('中文字数:', han, '"han"')
-        + line('中文字数(含标点):', han + han_punct, '["han", "han_punct"]')
-        + line('UTF-8大小:', utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4, '[[], ["utf8_1"], [], ["utf8_2"], ["utf8_3"], ["utf8_4"], []]')
-        + line('非空白字符数:', nonwhite, '"nonwhite"')
-        + line('hangul:', hangul, '"hangul"')
-        + line('总字符数:', character)
-        + suffix + '\n\n'
-        + this.paging.generate('overview');
-}
-// |||\\n|-|-:|\\n|单词数：|${word}|\\n|非 ASCII 字符数：|${nonascii}|\\n|中文字数：|${han}|\\n|中文字数（含标点）：|${han + han_punct}|\\n|UTF-8 大小：|${utf8_1*1+utf8_2*2+utf8_3*3+utf8_4*4}|\\n|非空白字符数：|${nonwhite}|\\n|总字符数：|${character}|\\n[点](command:vscode-hanzi-counter.highlight?%5B%22nonwhite%22%5D)`
+/* ==> 功能概览 Feature overview <== */
+`
+欢迎使用，下面向你展示该字数统计扩展的功能。\n
+\n
+修改文件时，以下内容会随字数变化而变化：\n
+- 单词数：[${spaced_word}](command:vscode-hanzi-counter.highlight?%5B%22spaced_word%22%5D)\n
+- 汉字数(包括标点)：[${han + han_punct}](command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent('[["han"],[],["han_punct"],[],[],[],[]]')}%5D)\n
+\n
+点击上面的数字，可以高亮对应的文本。\n
+\n
+使用前要先[设置默认提示框模板](command:workbench.action.openSettings?${encodeURIComponent('["vscode-hanzi-counter.template"]')})。\n
+\n
+将 \`Tooltip Template Name\` 设置为 \`Templates\` 设置中想要显示的某一项的名字（靠前的一列）即可。\n
+\n
+Welcome to use. This page is a little demo of the extension capabilities. \n
+\n
+The following items will update as you modify the file:\n
+- Words: [${spaced_word}](command:vscode-hanzi-counter.highlight?%5B%22spaced_word%22%5D)\n
+- Letters & Punctuations: [${letter + punct}](command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent('[["letter"],[],["punct"],[],[],[],[]]')}%5D)\n
+\n
+You can click the number shown above to highlight relevant text in the document.\n
+\n
+Before starting to use, you need to [select the default tooltip template](command:workbench.action.openSettings?${encodeURIComponent('["vscode-hanzi-counter.template"]')}) to show in the tooltip.\n
+\n
+Change \`Tooltip Template Name\` to one item of the \`Items\` column of \`Templates\` setting.\n
+Change \`StatusBar Template Name\` to \`status-bar\` for English display on status bar.\n
+\n
+${this.paging.generate('overview')}
+`

@@ -71,10 +71,10 @@ export class Counter {
             'color': color ? new vscode.ThemeColor(color) : undefined,
             'backgroundColor': new vscode.ThemeColor(background),
             'borderColor': new vscode.ThemeColor(border),
-            // https://github.com/microsoft/vscode/blob/3b4a151ea027219579234f1002f2c955ad2021ee/src/vs/editor/contrib/find/browser/findWidget.ts#L1400
-            'border': '2px dotted',
+            'borderWidth': '0 0 0.5em 0',
+            'borderStyle': 'solid',
             'overviewRulerColor': new vscode.ThemeColor(ruler),
-            // should
+            // should not extend
             'rangeBehavior': vscode.DecorationRangeBehavior.ClosedClosed
         }));
     }
@@ -185,5 +185,8 @@ export class Counter {
 
     public dispose() {
         this._statusBarItem.dispose();
+        for (let t of this._decorationTypes){
+            t.dispose();
+        }
     }
 }
