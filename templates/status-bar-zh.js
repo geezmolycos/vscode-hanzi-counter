@@ -1,7 +1,7 @@
 {
     /* ==> 中文状态栏 Chinese Status bar <== */
     // provide switching pages functions in tooltip
-    this.hlitMax = 10000;
+    this.hlitMax = Infinity;
     this.tableRow = (str, value, hlit, display) => (
         '<tr>'
         + `<td>${str}</td>`
@@ -14,9 +14,7 @@
     this.paging = this.paging || {
         'list': [
             ['western', '西'],
-            ['western-detailed', '详'],
             ['zh-hans', '简'],
-            ['zh-hans-detailed', '详'],
             ['zh-hant', '繁'],
             ['jp', '日'],
             ['kr', '韩'],

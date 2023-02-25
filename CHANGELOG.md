@@ -11,8 +11,11 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 设置正则的超时
 - 加入统计字数扩展比较和在线工具比较
 - 加配置编写教程
+- twitter character count
+- 日本语较准确的「原稿用紙換算」
+- UTF-8 大小使用MKB等字母表示
 
-## [1.2.0]
+## [1.2.0] - 2023-02-25
 
 - 加入日语、(朝鲜语/韩语)匹配规则
 - 加入更多自带的匹配规则，涵盖 unicode 各 General Category，以便使用

@@ -1,7 +1,7 @@
 {
     /* ==> 英文状态栏 English Status bar <== */
     // provide switching pages functions in tooltip
-    this.hlitMax = 10000;
+    this.hlitMax = Infinity; // maximum number that has highlight enabled
     this.tableRow = (str, value, hlit, display) => (
         '<tr>'
         + `<td>${str}</td>`
@@ -14,9 +14,7 @@
     this.paging = this.paging || {
         'list': [
             ['western', 'West'],
-            ['western-detailed', 'More'],
             ['zh-hans', 'Chs'],
-            ['zh-hans-detailed', 'More'],
             ['zh-hant', 'Cht'],
             ['jp', 'JP'],
             ['kr', 'KR'],
