@@ -5,14 +5,18 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 ## TODO
 
 - 加设置项，也加入更多预设
-- 加入图形渲染的模板
+- 加入图形渲染的模板（饼图）
 - 加中文的描述
 - 加截图
 - 设置正则的超时
+- 加入统计字数扩展比较和在线工具比较
 
 ## [1.2.0]
 
 - 加入日语、(朝鲜语/韩语)匹配规则
+- 加入更多自带的匹配规则，涵盖 unicode 各 General Category，以便使用
+- 加入tooltip分页，主页显示设置链接，快速进入设置
+- 加入日语韩语简介
 
 ## [1.1.0] - 2023-02-24
 

@@ -11,6 +11,7 @@ files.forEach((fileName) => {
 console.log(templates);
 
 let packagejson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'));
+packagejson.contributes.configuration.properties['vscode-hanzi-counter.counter.templates'].default = {};
 for (let t in templates){
     packagejson.contributes.configuration.properties['vscode-hanzi-counter.counter.templates'].default[t] = templates[t];
 }

@@ -1,8 +1,10 @@
 {
+
     const hlitMax = 10000;
     const prefix = '|||\n|-|-:|\n';
     const line = (str, value, hlit) => (`|${str}|` + (hlit && value < hlitMax ? `[${value}](command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent(hlit)}%5D)` : `${value}`) + '|\n');
-    return prefix
+    return this.paging.generate('overview') + '\n\n'
+        + prefix
         + line('单词数:', word, '"word"')
         + line('非ASCII字符数:', nonascii, '"nonascii"')
         + line('中文字数:', han, '"han"')
