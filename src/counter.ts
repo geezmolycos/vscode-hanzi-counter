@@ -21,7 +21,8 @@ function compileTemplateFunction(parameters: string[], template: string): Functi
 export class Counter {
 
     public readonly regexes: Map<string, RegExp>;
-    public readonly templateParameters: string[];
+    public readonly segmenters: Map<string, Intl.Segmenter | undefined>; // Intl.segmenter configurations
+    public readonly templateParameters: string[]; // parameter names list for template functions
     public readonly templates: Map<string, Function>;
     public readonly templateEnvironment: {[key: string]: any};
 
@@ -34,10 +35,30 @@ export class Counter {
             configuration.get('vscode-hanzi-counter.counter.regexes') as object
         ));
         this.regexes = new Map();
+        this.segmenters = new Map();
         this.templateParameters = [];
         for (let [k, v] of regexStrings){
-            this.regexes.set(k, new RegExp(v, 'gus'));
-            this.templateParameters.push(k);
+            let result = k.split('@');
+            if (result.length === 1){
+                // do not segment
+                this.regexes.set(result[0], new RegExp(v, 'gus'));
+                this.segmenters.set(result[0], undefined);
+                this.templateParameters.push(result[0]);
+            } else if (result.length === 2){
+                // segment
+                let granularity = new Map<string, Intl.SegmenterOptions['granularity']>([
+                    ['g', 'grapheme'],
+                    ['w', 'word'],
+                    ['s', 'sentence']
+                ]).get(result[1][0]);
+                if (granularity === undefined){
+                    throw new Error(`invalid granularity code for segment "${result[1][0]}" in regex "${k}"`);
+                }
+                let locale = result[1].substring(1) || undefined;
+                this.regexes.set(result[0], new RegExp(v, 'gus'));
+                this.segmenters.set(result[0], new Intl.Segmenter(locale, {"granularity": granularity}));
+                this.templateParameters.push(result[0]);
+            }
         }
 
         const templateStrings = new Map(Object.entries(

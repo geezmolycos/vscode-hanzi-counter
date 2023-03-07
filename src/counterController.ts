@@ -20,7 +20,7 @@ export class CounterController {
         // subscribe to selection change and editor activation events
         let subscriptions: vscode.Disposable[] = [];
         vscode.workspace.onDidOpenTextDocument(this._onDidOpenTextDocument, this, subscriptions);
-        // remove cache when saved for possible de-sync
+        // remove cache when saving file for possible de-sync
         vscode.workspace.onDidSaveTextDocument(this._onDidOpenTextDocument, this, subscriptions);
         vscode.workspace.onDidCloseTextDocument(this._onDidCloseTextDocument, this, subscriptions);
         vscode.workspace.onDidChangeTextDocument(this._onDidChangeTextDocument, this, subscriptions);

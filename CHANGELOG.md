@@ -4,16 +4,20 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 ## TODO
 
-- 加设置项，也加入更多预设
-- 加入图形渲染的模板（饼图）
-- 加中文的描述
 - 加截图
-- 设置正则的超时
 - 加入统计字数扩展比较和在线工具比较
 - 加配置编写教程
 - twitter character count
 - 日本语较准确的「原稿用紙換算」
 - UTF-8 大小使用MKB等字母表示
+- 匹配unicode grapheme cluster而非codepoint
+  - 提供分词器，使用u+fdd0代表字符边界
+
+## [1.3.0]
+
+- 为正则表达式加入匹配 Grapheme cluster / word / sentence 的选项
+  - 使用正则表达式的命名表示需要不需要开启分词器
+  - 使用 U+fdd0 和 U+fdd1 表示非单词边界和单词边界
 
 ## [1.2.0] - 2023-02-25
 
