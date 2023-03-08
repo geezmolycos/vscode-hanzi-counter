@@ -14,8 +14,8 @@
     this.paging = this.paging || {
         'list': [
             ['western', 'West'],
-            ['zh-hans', 'Chs'],
-            ['zh-hant', 'Cht'],
+            ['zh-hans', 'ChS'],
+            ['zh-hant', 'ChT'],
             ['jp', 'JP'],
             ['kr', 'KR'],
         ],

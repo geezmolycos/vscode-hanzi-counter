@@ -17,22 +17,17 @@ The author hasn't learned Japanese or Korean language, but the character/word co
 - 可使用 Javascript 自定义状态栏上、悬浮提示中显示的内容；使用正则表达式自主添加统计规则。自主编写规则、更改格式，可以解决你个人统计字数的绝大部分需求。
 - 可以为不同编程语言配置不同设置，或启用禁用显示。
 - 有丰富的预设配置，方便不同国家、不同语言用户使用。将来还会编写配置教程和英文描述。
+- 使用 `Intl.Segmenter` 划分字词，组合字符可以合起来统计，支持emoji
 
-### 暂时的缺陷
+## 图片展示
 
-- 因为是使用正则表达式，目前没有合理切分各类组合字符。现在的「字符数」其实是Unicode code point的数量。一些组合字符和表情符号可能计数不准。未来可能会解决。
+![中文界面](images/screenshot-tooltip.png)
+![English](images/screenshot-tooltip-english.png)
+![高亮](images/screenshot-highlight.png)
 
 ## 功能
 
-在状态栏上显示文档字数，鼠标移动到字数上，会显示详细统计信息。所有内容均可自定义，默认设置包括以下内容：
-
-- 单词数
-- 非 ASCII 字符数
-- 中文字数
-- 中文字数（含标点）
-- UTF-8 大小
-- 非空白字符数
-- 总字符数
+在状态栏上显示文档字数，鼠标移动到字数上，会显示详细统计信息。所有内容均可自定义。
 
 点击对应项目的数字可以高亮匹配的文字，在右边的滚动条上也会标记出匹配文字所在的位置
 

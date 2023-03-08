@@ -10,14 +10,15 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - twitter character count
 - 日本语较准确的「原稿用紙換算」
 - UTF-8 大小使用MKB等字母表示
-- 匹配unicode grapheme cluster而非codepoint
-  - 提供分词器，使用u+fdd0代表字符边界
+- 让使用 segmenter 的正则也可以高亮
+- 发布到open vsx上
 
 ## [1.3.0]
 
 - 为正则表达式加入匹配 Grapheme cluster / word / sentence 的选项
   - 使用正则表达式的命名表示需要不需要开启分词器
   - 使用 U+fdd0 和 U+fdd1 表示非单词边界和单词边界
+- 更改默认字符数为 grapheme cluster 数，另外提供 codepoint 数
 
 ## [1.2.0] - 2023-02-25
 

@@ -12,5 +12,5 @@
         + this.tableRow('UTF-8:', utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4, '[["utf8_1"],["utf8_4"],[],[],["utf8_3"],["utf8_2"],[]]', `${utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4} (${utf8_1}/${utf8_2}/${utf8_3}/${utf8_4})`)
         + this.tableRow('总字符数:', character)
         + suffix + '\n\n'
-        + this.paging.generate('zh_hans');
+        + this.paging.generate('zh-hans');
 }

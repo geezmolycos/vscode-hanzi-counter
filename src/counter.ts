@@ -1,5 +1,6 @@
 
 import * as vscode from 'vscode';
+import { DocumentCounter } from './documentCounter';
 
 const MAX_HIGHLIGHT_COUNT = 20000;
 const MAX_HIGHLIGHT_COUNT_VISIBLE = 20000;
@@ -39,6 +40,9 @@ export class Counter {
         this.templateParameters = [];
         for (let [k, v] of regexStrings){
             let result = k.split('@');
+            if (this.regexes.has(result[0])){
+                throw new Error(`regex table contains same keys "${result[0]}"`)
+            }
             if (result.length === 1){
                 // do not segment
                 this.regexes.set(result[0], new RegExp(v, 'gus'));
@@ -52,7 +56,7 @@ export class Counter {
                     ['s', 'sentence']
                 ]).get(result[1][0]);
                 if (granularity === undefined){
-                    throw new Error(`invalid granularity code for segment "${result[1][0]}" in regex "${k}"`);
+                    throw new Error(`invalid granularity code for segment "${result[1][0]}" in regex "${k}", it must be one of "gws"`);
                 }
                 let locale = result[1].substring(1) || undefined;
                 this.regexes.set(result[0], new RegExp(v, 'gus'));
@@ -143,7 +147,7 @@ export class Counter {
         } else {
             regexGroupList = regexNames as string[][];
         }
-        let regexGroups = regexGroupList.map(rList => rList.map(r => this.regexes.get(r)));
+        let regexGroups = regexGroupList.map(rList => rList.map(r => [this.regexes.get(r), this.segmenters.get(r)] as [RegExp, Intl.Segmenter | undefined]));
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
             let selections = vscode.window.activeTextEditor!.selections;
@@ -164,11 +168,12 @@ export class Counter {
                     continue;
                 }
                 let highlightRanges: vscode.Range[] = [];
-                for (let regex of regexes){
-                    if (!regex){
+                for (let regexSegmenter of regexes){
+                    if (!regexSegmenter[0]){
                         continue;
                     }
                     let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
+                        let [regex, segmenter] = regexSegmenter;
                         let startOffset = currentDocument!.offsetAt(selectionRange.start);
                         let text = currentDocument!.getText(selectionRange);
                         for (let match of text.matchAll(regex!)){
