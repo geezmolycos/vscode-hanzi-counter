@@ -1,14 +1,18 @@
 {
     /* ==> 中文状态栏 Chinese Status bar <== */
     // provide switching pages functions in tooltip
-    this.hlitMax = Infinity;
+    this.hlitMax = Infinity; // maximum number that has highlight enabled
+    // https://stackoverflow.com/a/2901298
+    this.numberWithCommas = (x) => {
+        return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    };
     this.tableRow = (str, value, hlit, display) => (
         '<tr>'
         + `<td>${str}</td>`
         + (
             hlit && value < this.hlitMax
-            ? `<td align="right"><a href="command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent(hlit)}%5D">${display || value}</a></td>`
-            : `<td align="right">${display || value}</td>`
+            ? `<td align="right"><a href="command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent(hlit)}%5D">${display || this.numberWithCommas(value)}</a></td>`
+            : `<td align="right">${display || this.numberWithCommas(value)}</td>`
         ) + '\n'
     );
     this.paging = this.paging || {
@@ -27,5 +31,5 @@
             ).join(' &#124; ') + ' ]</div>';
         }
     };
-    return `$(pencil) ${character} 字符`;
+    return `$(pencil) ${this.numberWithCommas(character)} 字符`;
 }

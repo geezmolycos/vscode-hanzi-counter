@@ -10,7 +10,7 @@
 \n
 使用前要先[设置默认提示框模板](command:workbench.action.openSettings?${encodeURIComponent('["vscode-hanzi-counter.template"]')})。\n
 \n
-将 \`Tooltip Template Name\` 设置为 \`Templates\` 设置中想要显示的某一项的名字（靠前的一列）即可。\n
+将 \`Tooltip Template Name\` 框中默认的 \`overview\` 修改为 \`Templates\` 设置中想要显示的某一项的名字（左边一列的英文）即可。\n
 \n
 Welcome to use. This page is a little demo of the extension capabilities. \n
 \n
@@ -22,7 +22,7 @@ You can click the number shown above to highlight relevant text in the document.
 \n
 Before starting to use, you need to [select the default tooltip template](command:workbench.action.openSettings?${encodeURIComponent('["vscode-hanzi-counter.template"]')}) to show in the tooltip.\n
 \n
-Change \`Tooltip Template Name\` to one item of the \`Items\` column of \`Templates\` setting.\n
+Change the default text \`overview\` in \`Tooltip Template Name\` to one item of the \`Items\` column of \`Templates\` setting.\n
 Change \`StatusBar Template Name\` to \`status-bar\` for English display on status bar.\n
 \n
 ${this.paging.generate('overview')}

@@ -4,19 +4,21 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 ## TODO
 
+- 编写测试用的文本
 - 加入统计字数扩展比较和在线工具比较
+  - 性能比较
+  - 正确性比较
 - 加配置编写教程
 - twitter character count
 - 日本语较准确的「原稿用紙換算」
-- UTF-8 大小使用MKB等字母表示
 - 发布到open vsx上
-- 更改统计的描述
 
-## [1.3.1]
+## [1.3.1] - 2023-03-08
 
 - 使用 Segmenter 的正则表达式也可以正常高亮了
   - 若该正则匹配 segment 标记字符，则会高亮整个 segment
   - 受算法性能限制，限制最大文本长度到 200000 (UTF-16，使用 substring 方法)，极罕见的情况下可能会产生半个surrogate pair
+- 数字默认使用逗号分隔，更加清晰
 
 ## [1.3.0] - 2023-03-08
 
