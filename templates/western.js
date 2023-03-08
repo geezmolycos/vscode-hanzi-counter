@@ -5,7 +5,7 @@
     return prefix
         + this.tableRow('Spaced words:', spaced_word, '"spaced_word"')
         + this.tableRow('Simple words:', simple_word, '"simple_word"')
-        + this.tableRow('Words:', segmenter_word)
+        + this.tableRow('Words:', segmenter_word, '"segmenter_word"')
         + this.tableRow('Sentences:', segmenter_sentence)
         + this.tableRow('Non-ASCII:', nonascii, '"nonascii"')
         + this.tableRow('Letters:', letter, '"letter"')

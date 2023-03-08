@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 import { DocumentCounter } from './documentCounter';
 
 const MAX_HIGHLIGHT_COUNT = 20000;
+const MAX_HIGHLIGHT_TEXT_LENGTH = 200000;
 const MAX_HIGHLIGHT_COUNT_VISIBLE = 20000;
 
 function compileTemplateFunction(parameters: string[], template: string): Function {
@@ -150,6 +151,9 @@ export class Counter {
         let regexGroups = regexGroupList.map(rList => rList.map(r => [this.regexes.get(r), this.segmenters.get(r)] as [RegExp, Intl.Segmenter | undefined]));
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
+            let eolString: string = new Map([
+                [vscode.EndOfLine.LF, '\n'], [vscode.EndOfLine.CRLF, '\r\n']
+            ]).get(currentDocument.eol)!;
             let selections = vscode.window.activeTextEditor!.selections;
             let allEmpty = true;
             for (let selection of selections){ // handle multi-selection
@@ -176,9 +180,58 @@ export class Counter {
                         let [regex, segmenter] = regexSegmenter;
                         let startOffset = currentDocument!.offsetAt(selectionRange.start);
                         let text = currentDocument!.getText(selectionRange);
+                        if (text.length > MAX_HIGHLIGHT_TEXT_LENGTH){
+                            text = text.substring(0, MAX_HIGHLIGHT_TEXT_LENGTH);
+                        }
+                        let getRealOffset: (offset: number) => number, getSegmentEndOffset: (offset: number) => number;
+                        // segment text
+                        if (segmenter !== undefined){
+                            let textLines = text.split(eolString);
+                            let segmentText = '';
+                            // split to lines for faster segmenting
+                            // Intl.Segmenter is slow for large input
+                            for (let line of textLines){
+                                let lineSegmentText = DocumentCounter.addSegmentIndicators(line, segmenter);
+                                segmentText += lineSegmentText + eolString;
+                            }
+                            text = segmentText.substring(0, segmentText.length - eolString.length); // remove final eol string
+                            let indicatorMatches = Array.from(text.matchAll(/[\ufdd0-\ufdef]/g));
+                            let sentinel: RegExpMatchArray = ['\ufdd0'];
+                            sentinel.index = text.length;
+                            indicatorMatches.push(sentinel);
+                            let nextIndicatorOffset = indicatorMatches[0].index ?? Infinity;
+                            let indicatorCount = 0;
+                            // offset must not decrease for correct result
+                            getRealOffset = (offset: number) => {
+                                if (offset === nextIndicatorOffset){
+                                    return offset - indicatorCount;
+                                }
+                                if (offset < nextIndicatorOffset){
+                                    return offset - indicatorCount;
+                                }
+                                while (offset > nextIndicatorOffset){
+                                    indicatorCount += 1;
+                                    nextIndicatorOffset = indicatorMatches[indicatorCount].index ?? Infinity;
+                                }
+                                return getRealOffset(offset);
+                            };
+                            // get segment end if character at offset is segment indicator
+                            getSegmentEndOffset = (offset: number) => {
+                                let maybeIndicatorOffset = getRealOffset(offset - 1);
+                                if (offset - 1 === nextIndicatorOffset){ // match ends with indicator
+                                    return (indicatorMatches[indicatorCount + 1].index ?? Infinity) - indicatorCount - 1;
+                                }
+                                return getRealOffset(offset);
+                            };
+                        } else {
+                            // no segmenter, range is as before
+                            getRealOffset = getSegmentEndOffset = (offset: number) => {
+                                return offset;
+                            };
+                        }
                         for (let match of text.matchAll(regex!)){
-                            let matchStartIndex = match.index!;
-                            let matchEndIndex = match.index! + match[0].length;
+                            let matchStartIndex = getRealOffset(match.index!);
+                            let matchEndIndex = getSegmentEndOffset(match.index! + match[0].length);
                             let matchRange = new vscode.Range(
                                 currentDocument!.positionAt(startOffset + matchStartIndex),
                                 currentDocument!.positionAt(startOffset + matchEndIndex)    
