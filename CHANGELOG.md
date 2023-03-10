@@ -13,6 +13,12 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.3.2]
+
+- 将汉字和 CJK 字符包括 Letter_Number 类，使得「〇」和苏州码字也包括在汉字内
+- 更改非空白字符规则，添加 Segmenter
+- 编写了该扩展和其他工具的正确性比较
+
 ## [1.3.1] - 2023-03-08
 
 - 使用 Segmenter 的正则表达式也可以正常高亮了
