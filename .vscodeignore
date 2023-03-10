@@ -10,3 +10,6 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 images/large/
+extension-profiles/
+my_profiling/
+*.vsix

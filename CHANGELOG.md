@@ -9,6 +9,10 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.3.3] - 2023-03-10
+
+- 之前打包了多余文件，造成文件变大，现在删除这些多余文件
+
 ## [1.3.2] - 2023-03-10
 
 - 将汉字和 CJK 字符包括 Letter_Number 类，使得「〇」和苏州码子也包括在汉字内
