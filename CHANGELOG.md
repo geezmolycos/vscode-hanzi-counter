@@ -4,20 +4,18 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 ## TODO
 
-- 编写测试用的文本
-- 加入统计字数扩展比较和在线工具比较
-  - 性能比较
-  - 正确性比较
 - 加配置编写教程
 - twitter character count
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
-## [1.3.2]
+## [1.3.2] - 2023-03-10
 
-- 将汉字和 CJK 字符包括 Letter_Number 类，使得「〇」和苏州码字也包括在汉字内
+- 将汉字和 CJK 字符包括 Letter_Number 类，使得「〇」和苏州码子也包括在汉字内
 - 更改非空白字符规则，添加 Segmenter
-- 编写了该扩展和其他工具的正确性比较
+- 增加了该扩展和其他工具的正确性对比文档
+- 增加了性能对比文档
+- 修改了 `README.md` 更直白，易于理解
 
 ## [1.3.1] - 2023-03-08
 

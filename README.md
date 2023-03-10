@@ -11,21 +11,7 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 作者不会日语和(朝鲜语/韩语)，但是这些语言字数统计是准确的。更多细节见下方说明。\
 The author hasn't learned Japanese or Korean language, but the character/word counters of those languages are correct. See below for more details. (You may want to use [google translate](https://translate.google.com/).)
 
-## 特色功能
-
-- 该扩展只在打开文件、保存文件时对全文统计字数。编辑过程中，扩展会只统计改变的部分，并动态更新统计结果。相比其他扩展每次修改都会重新全文统计，无论字数多少，该扩展只会占用极少的计算资源。约50万单词时，[VS Code 的示例词数统计扩展](https://marketplace.visualstudio.com/items?itemName=ms-vscode.wordcount)在编辑时出现明显卡顿（更改 markdown 判断代码使其在纯文本模式下启动，以消除markdown语法高亮的性能影响），本扩展依然能实时更新，没有可察觉的延迟。
-- 可使用 Javascript 自定义状态栏上、悬浮提示中显示的内容；使用正则表达式自主添加统计规则。自主编写规则、更改格式，可以解决你个人统计字数的绝大部分需求。
-- 可以为不同编程语言配置不同设置，或启用禁用显示。
-- 有丰富的预设配置，方便不同国家、不同语言用户使用。将来还会编写配置教程和英文描述。
-- 使用 `Intl.Segmenter` 划分字词，组合字符可以合起来统计，支持emoji
-
-## 图片展示
-
-![中文界面](images/screenshot-tooltip.png)
-![English](images/screenshot-tooltip-english.png)
-![高亮](images/screenshot-highlight.png)
-
-## 功能
+## 功能简介
 
 刚安装扩展时，状态栏的右下角会出现一个铅笔的图标，显示字数，鼠标移动到上面会弹出一个使用教程的提示，请按照提示更改设置。
 
@@ -37,34 +23,32 @@ The author hasn't learned Japanese or Korean language, but the character/word co
 
 状态栏显示默认在右边，也可以在设置里更改。
 
-## (朝鲜语/韩语)字符(谚文)规则说明
+## 对比其他扩展
 
-(朝鲜语/韩语)使用谚文作为主要书写系统。Unicode中，谚文可以使用音节形式和组合形式两种方法表示：音节形式即一个谚文方块字(音节)对应一个字符；而组合形式中，一个谚文方块字可由若干个部件字符(包括初声、中声、终声几类字符)组成。
+**不卡顿，性能好**
 
-通过对不同类型字符区别对待，可以准确地统计出谚文文本方块字(音节)的个数。规则如下：
+统计结果按行缓存，不会因为字数很多就变卡顿。以下是与其他扩展的速度对比([详情](comparison.md#性能对比))。
 
-|字符类型|正则|描述|
-|-|-|-|
-|音节和兼容字符|`[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}]`|包括所有 [Hangul Syllables](https://en.wikipedia.org/wiki/Hangul_Syllables)、[Hangul Compatibility Jamo](https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo) 中的字符，和 [Halfwidth and Fullwidth Forms](https://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms_(Unicode_block)) 中的半角谚文字符|
-|初声L|`[\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-A](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-A) 的所有L类字符|
-|中声V|`[\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B) 的所有V类字符|
-|终声T|`[\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B) 的所有T类字符|
+[<img alt="speed-comparison.png" src="images/speed-comparison.png" width="400px" />](comparison.md#性能对比)
 
-参考：\
-<https://stackoverflow.com/questions/9928505/what-does-the-expression-x-match-when-inside-a-regex>\
-<https://stackoverflow.com/questions/53198407/is-there-a-regular-expression-which-matches-a-single-grapheme-cluster>
+**支持多语言，中日韩**
 
-- 音节和兼容字符算一个字
-- L算一个字
-- V前没有L，算一个字
-- T前没有V，算一个字
+默认配置有英简繁日韩，内容符合对应语言用户所需
 
-合成後的正则表达式：
+<img alt="中文界面" src="images/screenshot-tooltip.png" width="200px" />
+<img alt="English" src="images/screenshot-tooltip-english.png" width="200px" />
 
-`[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}]|[\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}]|(?<![\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}])[\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}]|(?<![\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}])[\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}]`
+**结果正确，符合直觉**
 
-## Grapheme cluster boundary 和 Word boundary 规则说明
+正确地统计字数做起来比听起来难。本扩展使用 Unicode 属性决定字符属于哪类；使用现代 Javascript 分词 API `Intl.Segmenter` 处理组合字和组合符号。对各国文字、emoji 兼容性都极佳！（[详情](comparison.md#)）
 
-Unicode grapheme cluster 是书写系统中[公认的「字符」](http://utf8everywhere.org/#characters)的[一种近似](https://unicode.org/reports/tr29/)。有组合符号的字符，虽然组合符号是多个 codepoints，但是整体是一个 grapheme cluster。
+**点击即可高亮**
 
-Unicode 网站上有提供 [grapheme cluster 和 word 的规则](https://unicode.org/reports/tr29/)，javascript 中自带有 [`Intl.Segmenter`] 用来将文本分隔为 grapheme cluster 和 word 的。该扩展利用了该API进行指定语言的分词分句，详情请参考配置编写教程（暂未编写，有空会做）。
+无论如何也找不到文档中的某个非 ASCII 字符在哪？只需点一下，就可以把它高亮出来。也是方便的文字类型可视化工具。
+
+<img alt="highlight" src="images/screenshot-highlight.png" width="400px" />
+
+**可自行魔改**
+
+作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 Javascript 函数模板控制显示内容！(配置教程正在编写中…)
+

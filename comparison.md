@@ -35,7 +35,7 @@
 **测试结果**
 
 |工具名|字符数|非空白字符数|单词数|中文字数(含/不含标点)|西文字数|句数|段数|其他|
-|-|-|-|-|-|-|-|-|-|
+|-|-:|-:|-:|-:|-:|-:|-:|-|
 |Multi-purpose Hanzi and Word Counter|453|453|1|453/382||24|||
 |Word Count CJK|453|453|0|382|||||
 |Japanese Word Count|453|453||||||原稿用紙換算(400x?枚): 2|
@@ -56,9 +56,9 @@
 > 家蚕（学名：Bombyx mori）是鳞翅目蚕蛾科家蚕蛾属的完全变态昆虫，为丝绸的主要原料来源，在人类经济生活及文化历史上占有重要地位。家蚕原产中国，其幼虫在华南地区俗称蚕宝宝或娘仔，成虫称为蚕蛾。
 
 |工具名|字符数|单词数|中文字数(含/不含标点)|假名字数|谚文字数|西文字数|句数|段数|其他|
-|-|-|-|-|-|-|-|-|-|-|
+|-|-:|-:|-:|-:|-:|-:|-:|-:|-|
 |Multi-purpose Hanzi and Word Counter|376/354|23|166/132|92(66/26)|100/66||10|||
-|Word Count CJK|376/354|6|166/132|92(66/26)|100/66||10|||
+|Word Count CJK|376/354|6|132||||10|||
 |Japanese Word Count|374/354||||||||原稿用紙換算(400x?枚): 1|
 |WordCounter|376|23||||||1|3Lines, ~0m7s reading time|
 |Microsoft Word|374/354|14|(314)|(314)|(314)|||3|行: 13|
@@ -132,7 +132,7 @@
 > Call me Ishmael. Some years ago⁠—never mind how long precisely⁠—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off⁠—then, I account it high time to get to sea as soon as I can.
 
 |工具名|总/非空白字符数|字母/标点符号|单词数|句数|其他|
-|-|-|-|-|-|-|
+|-|-:|-:|-:|-:|-|
 |Multi-purpose Hanzi and Word Counter|798/657|636/18|142/146/145|4|单词数分别为「空格分词」「基本词」和「分段分词」|
 |Word Count CJK|798/657||146|||
 |WordCounter|798||142||1 Line, 1 Paragraph, ~0m43s reading time|
@@ -148,7 +148,7 @@
 > qú lì qwək qaˤ ʂaŋ sí jɨ́ kʰɨ́j ʔin ʁwá puq bìe tsʰjuo tɕɨ
 
 |工具名|总/非空白字符数|字母/标点符号|单词数|句数|其他|
-|-|-|-|-|-|-|
+|-|-:|-:|-:|-:|-|
 |Multi-purpose Hanzi and Word Counter|56/50|43/0|14/16/14|1|单词数分别为「空格分词」「基本词」和「分段分词」|
 |Word Count CJK|63/50||18|||
 |WordCounter|63||14||1 Line, 1 Paragraph, ~0m4s reading time|
@@ -162,7 +162,7 @@
 > qú lì qwək qaˤ ʂaŋ sí jɨ́ kʰɨ́j ʔin ʁwá puq bìe tsʰjuo tɕɨ
 
 |工具名|总/非空白字符数|字母/标点符号|单词数|句数|其他|
-|-|-|-|-|-|-|
+|-|-:|-:|-:|-:|-|
 |Multi-purpose Hanzi and Word Counter|56/45|43/0|14/15/14|1|单词数分别为「空格分词」「基本词」和「分段分词」|
 |Word Count CJK|58/45||18|||
 |WordCounter|58||14||1 Line, 1 Paragraph, ~0m4s reading time|
@@ -192,7 +192,7 @@
 - 结果为21字符，说明直接将 UTF-16 长度当作字符串长度了
 
 |工具名|字符数|其他|
-|-|-|-|
+|-|-:|-|
 |Multi-purpose Hanzi and Word Counter|4||
 |Word Count CJK|21||
 |Japanese Word Count|4||
@@ -202,3 +202,27 @@
 |wordcounter.net|21|1 word 21 characters|
 |wordcount.com|21|0 words 21 characters|
 |countwordsworth.com|21|1 words; 21 characters|
+
+## 性能对比
+
+该扩展只在打开文件、保存文件时对全文统计字数。统计的结果按行缓存。编辑过程中，扩展会只统计改变的部分，并动态更新统计结果。无论字数多少，该扩展只会占用极少的计算资源，而其他扩展字数越多，性能就越差，占用 CPU 也会越多。
+
+性能测试方法如下：
+
+- 禁用其他字数统计扩展，启用待测试的字数统计扩展
+- 启动 Extension Host Profile
+- 打开待测文件
+  - 重复100次：
+    - 在文件最后输入`\naa bb`(`\n`代表换行符)
+  - 将输入内容全部删除
+- 保存文件，关闭文件
+- 停止 Extension Host Profile，保存 profile 结果
+- 在 profile 结果中查找总时间最长的扩展内函数。
+
+|扩展名称|moby-dick-1k|moby-dick-10k|moby-dick-100k|moby-dick-1000k
+|-|-:|-:|-:|-:|
+|Multi-purpose Hanzi and Word Counter|79.41ms|106.30ms|273.72ms|2,051.07ms|
+|Word Count CJK|86.64ms|454.77ms|3,877.94ms|38,058.62ms|
+|Japanese Word Count|2,562.11ms|假死|崩溃|崩溃|
+|WordCounter|54.18ms|187.56ms|1,280.74ms|12,288.55ms|
+
