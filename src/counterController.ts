@@ -99,8 +99,15 @@ export class CounterController {
         }
     }
     
-    public changeTooltipTemplate(name: string){
+    public changeTooltipTemplate(name: string, isPermanent=false){
         this._tooltipTemplateName = name;
+        if (isPermanent){
+            vscode.workspace.getConfiguration().update(
+                'vscode-hanzi-counter.template.tooltipTemplateName',
+                name,
+                vscode.ConfigurationTarget.Global
+            );
+        }
         this._updateStatusBarItem();
     }
 

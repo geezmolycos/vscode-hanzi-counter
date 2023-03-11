@@ -23,12 +23,12 @@
             ['jp', '日'],
             ['kr', '韩'],
         ],
-        'generate': function (current, lang=1){
-            return '<div align="center">[ ' + this.list.map(e => 
+        'generate': (current, lang=1) => {
+            return '<div align="center">[ ' + this.paging.list.map(e => 
                 e[0] !== current
                 ? `<a href="command:vscode-hanzi-counter.changeTooltip?%5B%22${e[0]}%22%5D">${e[lang]}</a>`
                 : `${e[lang]}`
-            ).join(' &#124; ') + ' ]</div>';
+            ).join(' &#124; ') + ' ] ' + (this.defaultTooltipTemplateName === current ? '<span style="color:#00000000;"><small>设为默认</small></span>' : `<span><a href="command:vscode-hanzi-counter.changeTooltip?%5B%22${current}%22%2C%20true%5D"><small>设为默认</small></a></span>`);
         }
     };
     return `$(pencil) ${this.numberWithCommas(character)} 字符`;

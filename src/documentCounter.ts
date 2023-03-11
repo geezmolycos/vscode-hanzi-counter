@@ -280,6 +280,12 @@ export class DocumentCounter {
             }
         }
 
+        // provide template name stored in configuration file
+        let defaultTooltipTemplateName = vscode.workspace.getConfiguration('', this._document)
+            .get('vscode-hanzi-counter.template.tooltipTemplateName') as string;
+        
+        this._counter.templateEnvironment.defaultTooltipTemplateName = defaultTooltipTemplateName;
+
         tooltipTemplateName ??= this._tooltipTemplateName;
         let tooltipTemplate = this._counter.templates.get(tooltipTemplateName);
         if (tooltipTemplate !== undefined){

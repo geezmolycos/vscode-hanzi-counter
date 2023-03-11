@@ -18,9 +18,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(controller);
     context.subscriptions.push(counter);
 
-    let changeTooltip = vscode.commands.registerCommand('vscode-hanzi-counter.changeTooltip', (templateName) => {
+    let changeTooltip = vscode.commands.registerCommand('vscode-hanzi-counter.changeTooltip', (templateName, permanent=false) => {
         if (counter.templates.has(templateName)){
-            controller.changeTooltipTemplate(templateName);
+            controller.changeTooltipTemplate(templateName, permanent);
         } else {
             vscode.window.showErrorMessage(
                 `Tooltip template "${templateName}" does not exist. Please change your command according to names in the configuration.`,

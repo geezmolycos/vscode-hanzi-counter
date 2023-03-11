@@ -2,8 +2,6 @@
 
 该扩展的所有配置都在设置界面中的 `Extensions / Hanzi Counter` 里面。
 
-刚安装扩展时，状态栏的右下角会出现一个铅笔的图标，显示字数，鼠标移动到上面会弹出一个使用教程的提示，请按照提示更改设置。
-
 ## 基本配置
 
 **`Status Bar: Enabled`**
@@ -115,7 +113,9 @@ flowchart TD
 
 改变弹出窗口所用的模板。
 
-参数为 URL Encoded 的 json。参数是单个字符串，为模板名称。
+参数为 URL Encoded 的 json。参数有两个：第一个是单个字符串，为模板名称；第二个是 Boolean 值，表示是否保存到配置文件。
+
+如：`` `[Set English as default](command:vscode-hanzi-counter.changeTooltip?${encodeURIComponent('["western", true]')})` ``
 
 **例：高亮空白字符**
 
@@ -136,5 +136,6 @@ flowchart TD
 - `templateParamaters`: 传入模板函数的参数名列表
 - `segmenters`: 分段器表，类型为 `Map<string, Intl.Segmenter | undefined>`
 - `count`: 计数结果，为`Map<string, number?>`
+- `defaultTooltipTemplateName`: 目前配置文件中的默认模板名称
 
 状态栏模板会最先执行，因此可以通过状态栏模板初始化需要的变量和函数等。
