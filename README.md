@@ -8,9 +8,13 @@
 
 Customizable word counter with great support of Chinese characters (Hanzi), Japanese and Korean. Supports count in selection. Supports highlighting. Use custom regexes to match any character type you want.
 
+**[中文介绍](#中文介绍--chinese-description)** / **[English description](#english-description--英文介绍)**
+
+# 中文介绍 / Chinese Description
+
 ## 功能简介
 
-刚安装扩展时，状态栏的右下角会出现一个铅笔的图标，显示字数，鼠标移动到上面会弹出选择语言，请点击你想要显示的语言。下方的工具条也可以随时切换语言。点击「设为默认」可以将对应页面设为默认页面。
+刚安装扩展时，状态栏的右下角会出现一个铅笔的图标，显示字数（需要打开文本文件），鼠标移动到上面会弹出选择语言，请点击你想要显示的语言。下方的工具条也可以随时切换语言。点击「设为默认」可以将对应页面设为默认页面。
 
 在状态栏上显示文档字数，鼠标移动到字数上，会显示详细统计信息。所有内容均可自定义。
 
@@ -27,6 +31,8 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 统计结果按行缓存，不会因为字数很多就变卡顿。以下是与其他扩展的速度对比([详情](comparison.md#性能对比))。
 
 [<img alt="speed-comparison.png" src="images/speed-comparison.png" width="400px" />](comparison.md#性能对比)
+
+为了便于在图片上表示，将该扩展耗费时间全部归一化。字数多了该扩展花费的时间也会变多一些，但是增长相对其他扩展很小。
 
 **支持多语言，中日韩**
 
@@ -50,3 +56,52 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 **可自行魔改**
 
 作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 Javascript 函数模板控制显示内容！([配置教程](config-guide.md))
+
+# English Description / 英文介绍
+
+## Basic Introduction
+
+After installing, a pencil icon and character count will appear in the right area of status bar. Pointing at it will reveal a small pop-up window containing a language selection interface. Click the language you want it to show in. The bottom bar of the small window can also be used to change language temporarily. Press `Set as default` to set current page as the default page.
+
+It will show document character count on the status bar. Pointing at it will reveal detailed statistics. All items in it can be customized.
+
+By clicking on numbers, it will highlight respective text, the position of text will also be shown on the scrollbar at right of the text editor.
+
+This extension uses Regular Expression to match any type of character. It can be customized in the configuration.
+
+The status bar item is at right side by default, but you can change it to left in the settings.
+
+## Comparison with other extensions
+
+**No lags, good performance**
+
+The statistics result is calculated and cached per line. It won't lag because of very long text.
+
+This is comparison of time spent to other extensions: ([More info](comparison.md#性能对比))。
+
+[<img alt="speed-comparison.png" src="images/speed-comparison.png" width="400px" />](comparison.md#性能对比)
+
+To make the image prettier, the time spent of this extension is unified. However, the time will increase with more text, but it's much less time compared to other extensions.
+
+**Multiple languages including Chinese, Japanese, and Korean**
+
+The default configuration includes English (Western languages), Simplified and Traditional Chinese, Japanese, and Korean. The items shown is considered as relevant to the language user.
+
+<img alt="English" src="images/screenshot-tooltip-english.png" width="200px" />
+<img alt="中文界面" src="images/screenshot-tooltip.png" width="200px" />
+
+**Proper and intuitive result**
+
+It's harder to count words correctly than it seems. This extension uses Unicode properties to decide which type the character belongs to. It also uses modern segmentation Javascript API `Intl.Segmenter` to process combined characters and symbols. Greatly supports multiple scripts and emoji!
+
+The author hasn't learned Japanese and Korean language, but the results are correct. ([More details](comparison.md))
+
+**Click to highlight**
+
+Can't find out where the non-ASCII character is? Only a click to highlight it. It's also a convenient tool to visualize character types.
+
+<img alt="highlight" src="images/screenshot-highlight.png" width="400px" />
+
+**Hackable by user**
+
+"geezmolycos", the author believes that every tool should leave some free space to be modified and hacked. There are always some users who have strong desire to change and controll things around them. Therefore, you can add custom regex to match anything that you want, and change display text with Javascript function as template! ([Configuration guide](config-guide.md))
