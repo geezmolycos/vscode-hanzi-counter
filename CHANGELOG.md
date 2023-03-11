@@ -4,10 +4,13 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 ## TODO
 
-- 加配置编写教程
 - twitter character count
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
+
+## [1.3.4]
+
+- 增加了配置教程
 
 ## [1.3.3] - 2023-03-10
 

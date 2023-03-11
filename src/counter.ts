@@ -75,7 +75,7 @@ export class Counter {
         }
 
         // environment for template function to store variables
-        this.templateEnvironment = {'regexes': this.regexes, 'templatesParameters': this.templateParameters, 'templates': this.templates};
+        this.templateEnvironment = {'regexes': this.regexes, 'templatesParameters': this.templateParameters, 'templates': this.templates, 'segmenters': this.segmenters};
 
         // create status bar item
         this._statusBarItem = vscode.window.createStatusBarItem(
@@ -148,7 +148,7 @@ export class Counter {
         } else {
             regexGroupList = regexNames as string[][];
         }
-        let regexGroups = regexGroupList.map(rList => rList.map(r => [this.regexes.get(r), this.segmenters.get(r)] as [RegExp, Intl.Segmenter | undefined]));
+        let regexGroups = regexGroupList.map(rList => rList.map(r => [this.regexes.get(r), this.segmenters.get(r)] as [RegExp | undefined, Intl.Segmenter | undefined]));
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
             let eolString: string = new Map([

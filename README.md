@@ -8,9 +8,6 @@
 
 Customizable word counter with great support of Chinese characters (Hanzi), Japanese and Korean. Supports count in selection. Supports highlighting. Use custom regexes to match any character type you want.
 
-作者不会日语和(朝鲜语/韩语)，但是这些语言字数统计是准确的。更多细节见下方说明。\
-The author hasn't learned Japanese or Korean language, but the character/word counters of those languages are correct. See below for more details. (You may want to use [google translate](https://translate.google.com/).)
-
 ## 功能简介
 
 刚安装扩展时，状态栏的右下角会出现一个铅笔的图标，显示字数，鼠标移动到上面会弹出一个使用教程的提示，请按照提示更改设置。
@@ -40,7 +37,9 @@ The author hasn't learned Japanese or Korean language, but the character/word co
 
 **结果正确，符合直觉**
 
-正确地统计字数做起来比听起来难。本扩展使用 Unicode 属性决定字符属于哪类；使用现代 Javascript 分词 API `Intl.Segmenter` 处理组合字和组合符号。对各国文字、emoji 兼容性都极佳！（[详情](comparison.md#)）
+正确地统计字数做起来比听起来难。本扩展使用 Unicode 属性决定字符属于哪类；使用现代 Javascript 分词 API `Intl.Segmenter` 处理组合字和组合符号。对各国文字、emoji 兼容性都极佳！
+
+作者不会日语和(朝鲜语/韩语)，但是这些语言字数统计是准确的。（[详情](comparison.md)）
 
 **点击即可高亮**
 
@@ -50,5 +49,4 @@ The author hasn't learned Japanese or Korean language, but the character/word co
 
 **可自行魔改**
 
-作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 Javascript 函数模板控制显示内容！(配置教程正在编写中…)
-
+作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 Javascript 函数模板控制显示内容！([配置教程](config-guide.md))
