@@ -8,11 +8,12 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
-## [1.3.4]
+## [1.4.0]
 
 - 增加了配置教程
 - 取消介绍页面，增加 tooltip「设为默认」命令，在模板环境可以获取默认。刚开始会让用户选语言
 - README.md 中增加英文
+- 更改了各语言的标点符号匹配规则，现在只匹配对应语言文字中的标点符号
 
 ## [1.3.3] - 2023-03-10
 

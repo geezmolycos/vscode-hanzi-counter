@@ -102,11 +102,11 @@ flowchart TD
 
 参数为 URL Encoded 的 json。参数有以下几种格式：
 
-- `"id"`:\
+- `"w"`:\
   单个字符串，高亮对应 id 的正则表达式
-- `["id", "r", "o", "y", "g", "b", "p"]`:\
-  7个元素的字符串列表，设置高亮下划线标记的颜色，7个位置均为正则 id，其颜色分别为无、红、橙、黄、绿、蓝、紫。字符串可以为空，表示不高亮此颜色
-- `[["id"], ["r"], ["o"], ["y"], ["g"], ["b"], ["p"]]`:\
+- `["w", "r", "o", "y", "g", "b", "p"]`:\
+  7个元素的字符串列表，设置高亮下划线标记的颜色，7个位置均为正则 id，其颜色分别为白、红、橙、黄、绿、蓝、紫。字符串可以为空，表示不高亮此颜色
+- `[["w"], ["r"], ["o"], ["y"], ["g"], ["b"], ["p"]]`:\
   7个列表组成的列表，每个列表可以包含多个字符串，也可以没有字符串，可以把多个正则匹配都高亮为同一颜色
 
 **`vscode-hanzi-counter.changeTooltip`**
@@ -139,3 +139,45 @@ flowchart TD
 - `defaultTooltipTemplateName`: 目前配置文件中的默认模板名称
 
 状态栏模板会最先执行，因此可以通过状态栏模板初始化需要的变量和函数等。
+
+## (朝鲜语/韩语)字符(谚文)规则说明
+
+(朝鲜语/韩语)使用谚文作为主要书写系统。Unicode中，谚文可以使用音节形式和组合形式两种方法表示：音节形式即一个谚文方块字(音节)对应一个字符；而组合形式中，一个谚文方块字可由若干个部件字符(包括初声、中声、终声几类字符)组成。
+
+通过对不同类型字符区别对待，可以准确地统计出谚文文本方块字(音节)的个数。规则如下：
+
+|字符类型|正则|描述|
+|-|-|-|
+|音节和兼容字符|`[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}]`|包括所有 [Hangul Syllables](https://en.wikipedia.org/wiki/Hangul_Syllables)、[Hangul Compatibility Jamo](https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo) 中的字符，和 [Halfwidth and Fullwidth Forms](https://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms_(Unicode_block)) 中的半角谚文字符|
+|初声L|`[\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-A](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-A) 的所有L类字符|
+|中声V|`[\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B) 的所有V类字符|
+|终声T|`[\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B) 的所有T类字符|
+
+参考：\
+<https://stackoverflow.com/questions/9928505/what-does-the-expression-x-match-when-inside-a-regex>\
+<https://stackoverflow.com/questions/53198407/is-there-a-regular-expression-which-matches-a-single-grapheme-cluster>
+
+- 音节和兼容字符算一个字
+- L算一个字
+- V前没有L，算一个字
+- T前没有V，算一个字
+
+合成後的正则表达式：
+
+`[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}]|[\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}]|(?<![\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}])[\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}]|(?<![\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}])[\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}]`
+
+## Grapheme cluster boundary 和 Word boundary 规则说明
+
+Unicode grapheme cluster 是书写系统中[公认的「字符」](http://utf8everywhere.org/#characters)的[一种近似](https://unicode.org/reports/tr29/)。有组合符号的字符，虽然组合符号是多个 codepoints，但是整体是一个 grapheme cluster。
+
+Unicode 网站上有提供 [grapheme cluster 和 word 的规则](https://unicode.org/reports/tr29/)，javascript 中自带有 [`Intl.Segmenter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter) 用来将文本分隔为 grapheme cluster 和 word 的。该扩展利用了该API进行指定语言的分词分句，详情请参考配置编写教程（暂未编写，有空会做）。
+
+## 带标点符号和不带标点符号的说明
+
+「带标点符号」需要标点符号前方或後方有该项对应的文字。例如带标点符号的中文，那么标点符号必须和中文相邻，或前面只有标点符号，再前面是中文。数字在此语境下也算标点符号。
+
+例如：
+
+- `按M，安轨。`，两个符号都算
+- `美国圣地亚哥，American，Shengdiyage。`，只有第一个逗号算
+- `请打免费电话：0800-092-000。`，后面的符号和数字都算

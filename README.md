@@ -104,4 +104,4 @@ Can't find out where the non-ASCII character is? Only a click to highlight it. I
 
 **Hackable by user**
 
-"geezmolycos", the author believes that every tool should leave some free space to be modified and hacked. There are always some users who have strong desire to change and controll things around them. Therefore, you can add custom regex to match anything that you want, and change display text with Javascript function as template! ([Configuration guide](config-guide.md))
+*geezmolycos*, the author, believes that every tool should leave some free space to be modified and hacked. There are always some users who have strong desire to change and controll things around them. Therefore, you can add custom regex to match anything that you want, and change display text with Javascript function as template! ([Configuration guide](config-guide.md))
