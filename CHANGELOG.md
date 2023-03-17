@@ -8,6 +8,10 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.4.2] - 2023-03-17
+
+- 更新了 `package.json` ，使得扩展可在 VS Code for the Web 中运行
+
 ## [1.4.1] - 2023-03-17
 
 - 删除不再使用的 command contribution

@@ -57,6 +57,10 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 
 作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 Javascript 函数模板控制显示内容！([配置教程](config-guide.md))
 
+**可在 Web 版中运行**
+
+本扩展不依赖于 nodejs 或某个特定平台，在浏览器环境下的 [VS Code for the Web](https://vscode.dev/) 中也能运行。
+
 # English Description / 英文介绍
 
 ## Basic Introduction
@@ -105,3 +109,7 @@ Can't find out where the non-ASCII character is? Only a click to highlight it. I
 **Hackable by user**
 
 *geezmolycos*, the author, believes that every tool should leave some free space to be modified and hacked. There are always some users who have strong desire to change and controll things around them. Therefore, you can add custom regex to match anything that you want, and change display text with Javascript function as template! ([Configuration guide](config-guide.md))
+
+**Works in the web version**
+
+The extension doesn't rely on NodeJS or a specific platform. It can run in [VS Code for the Web](https://vscode.dev/).
