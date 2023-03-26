@@ -36,7 +36,15 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(changeTooltip);
 
     let showFind = vscode.commands.registerCommand('vscode-hanzi-counter.highlight', (regexName) => {
-        counter.setHighlightRegex(regexName);
+        try {
+            counter.setHighlightRegex(regexName);
+        } catch (e){
+            if (e instanceof Error){
+                vscode.window.showErrorMessage(e.message);
+            } else {
+                vscode.window.showErrorMessage('Error happened when highlighting');
+            }
+        }
 	});
 
 	context.subscriptions.push(showFind);

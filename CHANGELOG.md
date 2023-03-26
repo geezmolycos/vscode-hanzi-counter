@@ -8,6 +8,11 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.5.0]
+
+- 加入新的正则名字修饰符，表示预先将文本规范化为 Unicode 标准化形式
+  - 支持四种规范化形式(nfd/nfc/nfkd/nfkc)，支持高亮
+
 ## [1.4.2] - 2023-03-17
 
 - 更新了 `package.json` ，使得扩展可在 VS Code for the Web 中运行

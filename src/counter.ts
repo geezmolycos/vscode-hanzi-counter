@@ -6,6 +6,8 @@ const MAX_HIGHLIGHT_COUNT = 20000;
 const MAX_HIGHLIGHT_TEXT_LENGTH = 200000;
 const MAX_HIGHLIGHT_COUNT_VISIBLE = 20000;
 
+type NormalizationForm = 'nfd' | 'nfc' | 'nfkd' | 'nfkc';
+
 function compileTemplateFunction(parameters: string[], template: string): Function {
     let statementMatchResult = template.match(/^\s*{(.*)}\s*$/);
     let expressionMatchResult = template.match(/^\s*(.*)\s*$/);
@@ -24,6 +26,8 @@ export class Counter {
 
     public readonly regexes: Map<string, RegExp>;
     public readonly segmenters: Map<string, Intl.Segmenter | undefined>; // Intl.segmenter configurations
+    public readonly normalizations: Map<string, NormalizationForm | undefined>; // regex norm modifier
+
     public readonly templateParameters: string[]; // parameter names list for template functions
     public readonly templates: Map<string, Function>;
     public readonly templateEnvironment: {[key: string]: any};
@@ -37,6 +41,7 @@ export class Counter {
             configuration.get('vscode-hanzi-counter.counter.regexes') as object
         ));
         this.regexes = new Map();
+        this.normalizations = new Map();
         this.segmenters = new Map();
         this.templateParameters = [];
         for (let [k, v] of regexStrings){
@@ -44,13 +49,14 @@ export class Counter {
             if (this.regexes.has(result[0])){
                 throw new Error(`regex table contains same keys "${result[0]}"`)
             }
-            if (result.length === 1){
-                // do not segment
-                this.regexes.set(result[0], new RegExp(v, 'gus'));
-                this.segmenters.set(result[0], undefined);
-                this.templateParameters.push(result[0]);
-            } else if (result.length === 2){
-                // segment
+
+            // set regex map item
+            this.regexes.set(result[0], new RegExp(v, 'gus'));
+            this.segmenters.set(result[0], undefined);
+            this.normalizations.set(result[0], undefined);
+            this.templateParameters.push(result[0]);
+            // has segment
+            if (result.length >= 2 && result[1].length > 0){
                 let granularity = new Map<string, Intl.SegmenterOptions['granularity']>([
                     ['g', 'grapheme'],
                     ['w', 'word'],
@@ -60,9 +66,15 @@ export class Counter {
                     throw new Error(`invalid granularity code for segment "${result[1][0]}" in regex "${k}", it must be one of "gws"`);
                 }
                 let locale = result[1].substring(1) || undefined;
-                this.regexes.set(result[0], new RegExp(v, 'gus'));
                 this.segmenters.set(result[0], new Intl.Segmenter(locale, {"granularity": granularity}));
-                this.templateParameters.push(result[0]);
+            }
+            // has normalization form modifier
+            if (result.length >= 3 && result[2].length > 0){
+                if (result[2] !== 'nfc' && result[2] !== 'nfd' && result[2] !== 'nfkd' && result[2] !== 'nfkc'){
+                    throw new Error(`invalid normalization form "${result[2]}"`);
+                }
+                let normForm: NormalizationForm = result[2] as NormalizationForm;
+                this.normalizations.set(result[0], normForm);
             }
         }
 
@@ -148,7 +160,10 @@ export class Counter {
         } else {
             regexGroupList = regexNames as string[][];
         }
-        let regexGroups = regexGroupList.map(rList => rList.map(r => [this.regexes.get(r), this.segmenters.get(r)] as [RegExp | undefined, Intl.Segmenter | undefined]));
+        let regexGroups = regexGroupList.map(rList => rList.map(
+            r => [this.regexes.get(r), this.segmenters.get(r), this.normalizations.get(r)] as
+            [RegExp | undefined, Intl.Segmenter | undefined, NormalizationForm | undefined]
+        ));
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
             let eolString: string = new Map([
@@ -172,18 +187,68 @@ export class Counter {
                     continue;
                 }
                 let highlightRanges: vscode.Range[] = [];
-                for (let regexSegmenter of regexes){
-                    if (!regexSegmenter[0]){
+                for (let regexTuple of regexes){
+                    if (!regexTuple[0]){
                         continue;
                     }
                     let addSelectionRangeHighlight = (selectionRange: vscode.Range, maxCount: number) => {
-                        let [regex, segmenter] = regexSegmenter;
+                        let [regex, segmenter, norm] = regexTuple;
+                        let normalization = norm?.toUpperCase();
                         let startOffset = currentDocument!.offsetAt(selectionRange.start);
                         let text = currentDocument!.getText(selectionRange);
                         if (text.length > MAX_HIGHLIGHT_TEXT_LENGTH){
                             text = text.substring(0, MAX_HIGHLIGHT_TEXT_LENGTH);
                         }
-                        let getRealOffset: (offset: number) => number, getSegmentEndOffset: (offset: number) => number;
+
+                        // normalization form processing
+                        // calculate string position lookup, similar to segmenter
+                        let getBeforeNormalizationOffset: (offset: number) => number;
+
+                        if (normalization === undefined){
+                            getBeforeNormalizationOffset = (offset) => offset;
+                        } else if (normalization === 'nfd' || normalization === 'nfkd') {
+                            let beforeText = text;
+                            let afterText = text.normalize(normalization);
+                            text = afterText;
+                            let beforeOffset = 0;
+                            let afterOffset = 0;
+                            getBeforeNormalizationOffset = (offset) => { // works for nfd and nfkd
+                                while (offset > afterOffset){
+                                    let bef = beforeText[beforeOffset];
+                                    let aft = bef.normalize(normalization);
+                                    beforeOffset += 1;
+                                    afterOffset += aft.length;
+                                }
+                                return beforeOffset;
+                            };
+                        } else {
+                            let beforeText = text;
+                            let dNormalization = normalization.replace('C', 'D');
+                            let dText = text.normalize(dNormalization);
+                            let cText = dText.normalize(normalization);
+                            text = cText;
+                            let beforeOffset = 0;
+                            let dOffset = 0;
+                            let dcOffset = 0;
+                            let cOffset = 0;
+                            getBeforeNormalizationOffset = (offset) => {
+                                while (offset > cOffset){
+                                    let c = cText[cOffset];
+                                    let dc = c.normalize(dNormalization);
+                                    cOffset += 1;
+                                    dcOffset += dc.length;
+                                }
+                                while (dcOffset > dOffset){
+                                    let bef = beforeText[beforeOffset];
+                                    let d = bef.normalize(dNormalization);
+                                    beforeOffset += 1;
+                                    dOffset += d.length;
+                                }
+                                return beforeOffset;
+                            };
+                        }
+
+                        let getBeforeSegmentingOffset: (offset: number) => number, getSegmentEndOffset: (offset: number) => number;
                         // segment text
                         if (segmenter !== undefined){
                             let textLines = text.split(eolString);
@@ -202,7 +267,7 @@ export class Counter {
                             let nextIndicatorOffset = indicatorMatches[0].index ?? Infinity;
                             let indicatorCount = 0;
                             // offset must not decrease for correct result
-                            getRealOffset = (offset: number) => {
+                            getBeforeSegmentingOffset = (offset: number) => {
                                 if (offset === nextIndicatorOffset){
                                     return offset - indicatorCount;
                                 }
@@ -213,25 +278,25 @@ export class Counter {
                                     indicatorCount += 1;
                                     nextIndicatorOffset = indicatorMatches[indicatorCount].index ?? Infinity;
                                 }
-                                return getRealOffset(offset);
+                                return getBeforeSegmentingOffset(offset);
                             };
                             // get segment end if character at offset is segment indicator
                             getSegmentEndOffset = (offset: number) => {
-                                let maybeIndicatorOffset = getRealOffset(offset - 1);
+                                let maybeIndicatorOffset = getBeforeSegmentingOffset(offset - 1);
                                 if (offset - 1 === nextIndicatorOffset){ // match ends with indicator
                                     return (indicatorMatches[indicatorCount + 1].index ?? Infinity) - indicatorCount - 1;
                                 }
-                                return getRealOffset(offset);
+                                return getBeforeSegmentingOffset(offset);
                             };
                         } else {
                             // no segmenter, range is as before
-                            getRealOffset = getSegmentEndOffset = (offset: number) => {
+                            getBeforeSegmentingOffset = getSegmentEndOffset = (offset: number) => {
                                 return offset;
                             };
                         }
                         for (let match of text.matchAll(regex!)){
-                            let matchStartIndex = getRealOffset(match.index!);
-                            let matchEndIndex = getSegmentEndOffset(match.index! + match[0].length);
+                            let matchStartIndex = getBeforeNormalizationOffset(getBeforeSegmentingOffset(match.index!));
+                            let matchEndIndex = getBeforeNormalizationOffset(getSegmentEndOffset(match.index! + match[0].length));
                             let matchRange = new vscode.Range(
                                 currentDocument!.positionAt(startOffset + matchStartIndex),
                                 currentDocument!.positionAt(startOffset + matchEndIndex)    

@@ -147,19 +147,37 @@ export class DocumentCounter {
             throw new Error(`non-existent regex "${regexName}"`);
         }
         let segmenter = this._counter.segmenters.get(regexName);
+        let normalization = this._counter.normalizations.get(regexName)?.toUpperCase();
         let lineCount = [];
-        if (segmenter === undefined){
-            for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
-                let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
-                let matchCount = lineText.match(regex)?.length ?? 0;
-                lineCount.push(matchCount);
+        if (normalization === undefined){
+            if (segmenter === undefined){
+                for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
+                    let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
+                    let matchCount = lineText.match(regex)?.length ?? 0;
+                    lineCount.push(matchCount);
+                }
+            } else {
+                for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
+                    let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
+                    lineText = DocumentCounter.addSegmentIndicators(lineText, segmenter);
+                    let matchCount = lineText.match(regex)?.length ?? 0;
+                    lineCount.push(matchCount);
+                }
             }
         } else {
-            for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
-                let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
-                lineText = DocumentCounter.addSegmentIndicators(lineText, segmenter);
-                let matchCount = lineText.match(regex)?.length ?? 0;
-                lineCount.push(matchCount);
+            if (segmenter === undefined){
+                for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
+                    let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0)).normalize(normalization);
+                    let matchCount = lineText.match(regex)?.length ?? 0;
+                    lineCount.push(matchCount);
+                }
+            } else {
+                for (let lineNumber = 0; lineNumber < this._document.lineCount; ++lineNumber){
+                    let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0)).normalize(normalization);
+                    lineText = DocumentCounter.addSegmentIndicators(lineText, segmenter);
+                    let matchCount = lineText.match(regex)?.length ?? 0;
+                    lineCount.push(matchCount);
+                }
             }
         }
         this._cachedLineCounts.set(regexName, new CachedLineCount(lineCount));
@@ -180,19 +198,37 @@ export class DocumentCounter {
                 throw new Error(`non-existent regex "${regexName}"`);
             }
             let segmenter = this._counter.segmenters.get(regexName);
+            let normalization = this._counter.normalizations.get(regexName)?.toUpperCase();
             let lineCount = [];
-            if (segmenter === undefined){
-                for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
-                    let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
-                    let matchCount = lineText.match(regex)?.length ?? 0;
-                    lineCount.push(matchCount);
+            if (normalization === undefined){
+                if (segmenter === undefined){
+                    for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
+                        let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
+                        let matchCount = lineText.match(regex)?.length ?? 0;
+                        lineCount.push(matchCount);
+                    }
+                } else {
+                    for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
+                        let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
+                        lineText = DocumentCounter.addSegmentIndicators(lineText, segmenter);
+                        let matchCount = lineText.match(regex)?.length ?? 0;
+                        lineCount.push(matchCount);
+                    }
                 }
             } else {
-                for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
-                    let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0));
-                    lineText = DocumentCounter.addSegmentIndicators(lineText, segmenter);
-                    let matchCount = lineText.match(regex)?.length ?? 0;
-                    lineCount.push(matchCount);
+                if (segmenter === undefined){
+                    for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
+                        let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0)).normalize(normalization);
+                        let matchCount = lineText.match(regex)?.length ?? 0;
+                        lineCount.push(matchCount);
+                    }
+                } else {
+                    for (let lineNumber = affectedLineStart; lineNumber < affectedLineStart + newTextLineCount; ++lineNumber){
+                        let lineText = this._document.getText(new vscode.Range(lineNumber, 0, lineNumber + 1, 0)).normalize(normalization);
+                        lineText = DocumentCounter.addSegmentIndicators(lineText, segmenter);
+                        let matchCount = lineText.match(regex)?.length ?? 0;
+                        lineCount.push(matchCount);
+                    }
                 }
             }
             lineCounts.replace(affectedLineStart, affectedLineEnd + 1, lineCount);
@@ -222,14 +258,21 @@ export class DocumentCounter {
             }
 
             let segmenter = this._counter.segmenters.get(regexName);
+            let normalization = this._counter.normalizations.get(regexName)?.toUpperCase();
 
             let beforeText = this._document.getText(partialBefore);
+            if (normalization){
+                beforeText = beforeText.normalize(normalization);
+            }
             if (segmenter){
                 beforeText = DocumentCounter.addSegmentIndicators(beforeText, segmenter);
             }
             let beforeCount = beforeText.match(this._counter.regexes.get(regexName)!)?.length ?? 0;
 
             let afterText = this._document.getText(partialAfter);
+            if (normalization){
+                afterText = afterText.normalize(normalization);
+            }
             if (segmenter){
                 afterText = DocumentCounter.addSegmentIndicators(afterText, segmenter);
             }

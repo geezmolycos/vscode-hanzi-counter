@@ -14,7 +14,8 @@
 				"${workspaceFolder}/vsc-extension-quickstart.md"
 			],
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/out/**/*.js",
+				"${workspaceFolder}/dist/*.js",
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		},
