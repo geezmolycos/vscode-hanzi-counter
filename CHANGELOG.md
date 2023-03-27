@@ -12,6 +12,8 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 加入新的正则名字修饰符，表示预先将文本规范化为 Unicode 标准化形式
   - 支持四种规范化形式(nfd/nfc/nfkd/nfkc)，支持高亮
+- 谚文匹配规则利用了修饰符，更加简洁
+- 更改了模糊的「非空白字符」「非ASCII字符」等，加入码位数，以澄清字符和码位的区别
 
 ## [1.4.2] - 2023-03-17
 

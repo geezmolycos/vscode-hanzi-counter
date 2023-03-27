@@ -208,21 +208,23 @@ export class Counter {
                             getBeforeNormalizationOffset = (offset) => offset;
                         } else if (normalization === 'nfd' || normalization === 'nfkd') {
                             let beforeText = text;
+                            let beforeTextIterator = beforeText[Symbol.iterator]();
                             let afterText = text.normalize(normalization);
                             text = afterText;
                             let beforeOffset = 0;
                             let afterOffset = 0;
                             getBeforeNormalizationOffset = (offset) => { // works for nfd and nfkd
                                 while (offset > afterOffset){
-                                    let bef = beforeText[beforeOffset];
+                                    let bef = beforeTextIterator.next().value; // handles utf-16 surrogate pair
                                     let aft = bef.normalize(normalization);
-                                    beforeOffset += 1;
+                                    beforeOffset += bef.length;
                                     afterOffset += aft.length;
                                 }
                                 return beforeOffset;
                             };
                         } else {
                             let beforeText = text;
+                            let beforeTextIterator = beforeText[Symbol.iterator]();
                             let dNormalization = normalization.replace('C', 'D');
                             let dText = text.normalize(dNormalization);
                             let cText = dText.normalize(normalization);
@@ -232,16 +234,17 @@ export class Counter {
                             let dcOffset = 0;
                             let cOffset = 0;
                             getBeforeNormalizationOffset = (offset) => {
-                                while (offset > cOffset){
-                                    let c = cText[cOffset];
-                                    let dc = c.normalize(dNormalization);
-                                    cOffset += 1;
-                                    dcOffset += dc.length;
-                                }
+                                // this is somewhat difficult to explain
+                                // if you need to understand this piece of code
+                                // wish you good luck
+                                let cNew = cText.substring(cOffset, offset);
+                                let dcNew = cNew.normalize(dNormalization);
+                                cOffset += cNew.length;
+                                dcOffset += dcNew.length;
                                 while (dcOffset > dOffset){
-                                    let bef = beforeText[beforeOffset];
+                                    let bef = beforeTextIterator.next().value;
                                     let d = bef.normalize(dNormalization);
-                                    beforeOffset += 1;
+                                    beforeOffset += bef.length;
                                     dOffset += d.length;
                                 }
                                 return beforeOffset;
