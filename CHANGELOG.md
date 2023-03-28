@@ -8,7 +8,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
-## [1.5.0] - 2023-03-28
+## [1.5.0] - 2023-03-29
 
 - 加入新的正则名字修饰符，表示预先将文本规范化为 Unicode 标准化形式
   - 支持四种规范化形式(nfd/nfc/nfkd/nfkc)，支持高亮
@@ -109,7 +109,7 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 
 - 在状态栏上显示文档字数，tooltip 中显示详细信息，点击展开显示更详细信息
 - 在设置中添加要统计字数的各类项目对应的正则表达式
-- 在设置中通过 Javascript 函数自定义要显示的内容
+- 在设置中通过 JavaScript 函数自定义要显示的内容
 - 默认设置添加统计项目：
   - 单词数
   - 总字符数

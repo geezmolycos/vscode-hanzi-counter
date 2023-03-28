@@ -104,14 +104,16 @@ flowchart TD
 
 ## 模板表
 
-模板表位于设置项 `Counter: Templates` 中，每一项表示一个模板。模板会转换成 Javascript 的函数，最后产生显示的文本。模板有两种格式：
+模板表位于设置项 `Counter: Templates` 中，每一项表示一个模板。模板会转换成 JavaScript 的函数，最后产生显示的文本。模板有两种格式：
 
 - 代码块格式：模板内容由 `{` 开始，由 `}` 结束
 - 表达式格式：不是代码块格式的，就是表达式格式
 
 代码块格式，其函数体就是 `{...}` 中包含的内容，而表达式格式，函数体等同于 `return ...`
 
-模板转化为 Javascript 函数时，其参数表就是上述正则表达式表的所有 `id`。因此，其中可以使用上述正则表达式的 `id` 作为变量。模板转换的函数需要返回的值，就是显示在状态栏或弹窗中的字符串，该字符串使用 VS Code 的 [`MarkdownString`](https://code.visualstudio.com/api/references/vscode-api#MarkdownString)，可以用 Markdown 语法。
+模板转化为 JavaScript 函数时，其参数表就是上述正则表达式表的所有 `id`。因此，其中可以使用上述正则表达式的 `id` 作为变量。模板转换的函数需要返回的值，就是显示在状态栏或弹窗中的字符串，该字符串使用 VS Code 的 [`MarkdownString`](https://code.visualstudio.com/api/references/vscode-api#MarkdownString)，可以用 Markdown 语法。
+
+因为模板只能输入单行代码，推荐编辑前使用 JavaScript 代码格式化工具，编辑完成后，再使用 minifier 工具。
 
 **例：获取空白字符数**
 

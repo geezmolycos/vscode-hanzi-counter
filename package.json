@@ -9,7 +9,7 @@
     "regex"
   ],
   "description": "多功能文档字数统计，支持中文、日文、朝鲜/韩文，支持选区统计，点击即可高亮，也可用正则表达式自定义要统计的内容。\n\n中国語/日本語/朝鮮/韓国語文字数計算ツール。중국어/일본어/한국어/조선어 세기 도구.\n\nCustomizable word counter with great support of Chinese characters (Hanzi), Japanese and Korean. Supports count in selection. Supports highlighting. Use custom regexes to match any character type you want.",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "publisher": "geezmolycos",
   "engines": {
     "vscode": "^1.74.0"
@@ -116,7 +116,7 @@
             "zh-hans": "{/* ==> 简体中文 Simplified Chinese <== */const prefix = '<table width=\"100%\"><tbody>';const suffix = '</tbody></table>';return prefix+ this.tableRow('中文:', han + han_punct, '[[\"han\"],[],[],[],[],[\"han_punct\"],[]]')+ this.tableRow('中文(不含标点):', han, '\"han\"')+ this.tableRow('CJK字符:', cjk, '[[\"cjk\"],[\"katakana\"],[\"hiragana\"],[\"han\"],[\"hangul\"],[],[]]')+ this.tableRow('单词:', spaced_word, '\"spaced_word\"')+ this.tableRow('非ASCII字符:', nonascii, '\"nonascii\"')+ this.tableRow('非空白字符:', nonwhite, '\"nonwhite\"')+ this.tableRow('字符数:', character)+ this.tableRow('码位数:', codepoint)+ this.tableRow('UTF-8:', utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4, '[[\"utf8_1\"],[\"utf8_4\"],[],[],[\"utf8_3\"],[\"utf8_2\"],[]]', `${this.numberWithCommas(utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4)}`)+ this.utf8Row(utf8_1, utf8_2, utf8_3, utf8_4)+ suffix + '\\n\\n'+ this.paging.generate('zh-hans');}",
             "zh-hant": "{/* ==> 繁體中文 Traditional Chinese <== */const prefix = '<table width=\"100%\"><tbody>';const suffix = '</tbody></table>';return prefix+ this.tableRow('中文:', han + han_punct, '[[\"han\"],[],[],[],[],[\"han_punct\"],[]]')+ this.tableRow('中文(不含標點):', han, '\"han\"')+ this.tableRow('CJK字符:', cjk, '[[\"cjk\"],[\"katakana\"],[\"hiragana\"],[\"han\"],[\"hangul\"],[],[]]')+ this.tableRow('單詞:', spaced_word, '\"spaced_word\"')+ this.tableRow('非ASCII字符:', nonascii, '\"nonascii\"')+ this.tableRow('非空白字符:', nonwhite, '\"nonwhite\"')+ this.tableRow('字符數:', character)+ this.tableRow('碼位數:', codepoint)+ this.tableRow('UTF-8:', utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4, '[[\"utf8_1\"],[\"utf8_4\"],[],[],[\"utf8_3\"],[\"utf8_2\"],[]]', `${this.numberWithCommas(utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4)}`)+ this.utf8Row(utf8_1, utf8_2, utf8_3, utf8_4)+ suffix + '\\n\\n'+ this.paging.generate('zh-hant');}"
           },
-          "markdownDescription": "Each item is a Javascript expression or code block that returns a markdown string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect.\n\n**This can execute arbitrary code and is NOT sandboxed. Please make sure any code used here is safe.**\n\n模板表。更改后需要重启。\n\n**该项设置可以包含任意代码，请自行确认代码安全性。**"
+          "markdownDescription": "Each item is a JavaScript expression or code block that returns a markdown string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect.\n\n**This can execute arbitrary code and is NOT sandboxed. Please make sure any code used here is safe.**\n\n模板表。更改后需要重启。\n\n**该项设置可以包含任意代码，请自行确认代码安全性。**"
         },
         "vscode-hanzi-counter.template.statusBarTemplateName": {
           "type": "string",

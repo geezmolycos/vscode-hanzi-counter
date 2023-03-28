@@ -176,7 +176,7 @@
 
 **非 BMP 字符和 emoji**
 
-非 BMP 字符指 Unicode 中不属于 [Basic Multilingual Plane](https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane) 的字符。因为历史原因，UTF-16 编码中（Javascript字符串使用 UTF-16 编码）这些字符使用一对 Surrogate pair 表示，有些实现可能会将其当作两个字符。其次，一部分 emoji 字符是非 BMP 字符，而且一些 emoji 是由多个字符组合成的字符，例如：
+非 BMP 字符指 Unicode 中不属于 [Basic Multilingual Plane](https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane) 的字符。因为历史原因，UTF-16 编码中（JavaScript字符串使用 UTF-16 编码）这些字符使用一对 Surrogate pair 表示，有些实现可能会将其当作两个字符。其次，一部分 emoji 字符是非 BMP 字符，而且一些 emoji 是由多个字符组合成的字符，例如：
 
 |文本|Unicode 序列|
 |-|-|

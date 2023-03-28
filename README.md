@@ -43,7 +43,7 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 
 **结果正确，符合直觉**
 
-正确地统计字数做起来比听起来难。本扩展使用 Unicode 属性决定字符属于哪类；使用现代 Javascript 分词 API `Intl.Segmenter` 处理组合字和组合符号。对各国文字、emoji 兼容性都极佳！
+正确地统计字数做起来比听起来难。本扩展使用 Unicode 属性决定字符属于哪类；使用现代 JavaScript 分词 API `Intl.Segmenter` 处理组合字和组合符号。对各国文字、emoji 兼容性都极佳！
 
 作者不会日语和(朝鲜语/韩语)，但是这些语言字数统计是准确的。（[详情](comparison.md)）
 
@@ -55,7 +55,7 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 
 **可自行魔改**
 
-作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 Javascript 函数模板控制显示内容！([配置教程](config-guide.md))
+作者「金毛」认为每个工具都应该留下足够大的魔改空间，总有一些深度用户有极强的改造力和控制力。因此，本扩展可以自行添加正则表达式匹配你想要的几乎任何东西，并用 JavaScript 函数模板控制显示内容！([配置教程](config-guide.md))
 
 **可在 Web 版中运行**
 
@@ -96,7 +96,7 @@ The default configuration includes English (Western languages), Simplified and T
 
 **Proper and intuitive result**
 
-It's harder to count words correctly than it seems. This extension uses Unicode properties to decide which type the character belongs to. It also uses modern segmentation Javascript API `Intl.Segmenter` to process combined characters and symbols. Greatly supports multiple scripts and emoji!
+It's harder to count words correctly than it seems. This extension uses Unicode properties to decide which type the character belongs to. It also uses modern segmentation JavaScript API `Intl.Segmenter` to process combined characters and symbols. Greatly supports multiple scripts and emoji!
 
 The author hasn't learned Japanese and Korean language, but the results are correct. ([More details](comparison.md))
 
@@ -108,7 +108,7 @@ Can't find out where the non-ASCII character is? Only a click to highlight it. I
 
 **Hackable by user**
 
-*geezmolycos*, the author, believes that every tool should leave some free space to be modified and hacked. There are always some users who have strong desire to change and controll things around them. Therefore, you can add custom regex to match anything that you want, and change display text with Javascript function as template! ([Configuration guide](config-guide.md))
+*geezmolycos*, the author, believes that every tool should leave some free space to be modified and hacked. There are always some users who have strong desire to change and controll things around them. Therefore, you can add custom regex to match anything that you want, and change display text with JavaScript function as template! ([Configuration guide](config-guide.md))
 
 **Works in the web version**
 
