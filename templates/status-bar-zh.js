@@ -15,6 +15,9 @@
             : `<td align="right">${display || this.numberWithCommas(value)}</td>`
         ) + '\n'
     );
+    this.utf8Row = (utf8_1, utf8_2, utf8_3, utf8_4) => (
+        `<tr><td></td><td align="right"><small><a href="command:vscode-hanzi-counter.highlight?${encodeURIComponent('[[["utf8_1"],[],[],[],[],[],[]]]')}">${this.numberWithCommas(utf8_1)}</a> · <a href="command:vscode-hanzi-counter.highlight?${encodeURIComponent('[[[],[],[],[],[],["utf8_2"],[]]]')}">${this.numberWithCommas(utf8_2)}</a> · <a href="command:vscode-hanzi-counter.highlight?${encodeURIComponent('[[[],[],[],[],["utf8_3"],[],[]]]')}">${this.numberWithCommas(utf8_3)}</a> · <a href="command:vscode-hanzi-counter.highlight?${encodeURIComponent('[[[],["utf8_4"],[],[],[],[],[]]]')}">${this.numberWithCommas(utf8_4)}</a></small></td></tr>`
+    );
     this.paging = this.paging || {
         'list': [
             ['western', '西'],

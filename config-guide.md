@@ -46,8 +46,8 @@
 
 - 找出你现在使用的状态栏模板名字，查看设置 `Template: Status Bar Template Name` 寻找该项名字对应的模板。
 - 例如该项是 `status-bar-zh`，则将 `Counter: Templates` 中的 `status-bar-zh` 项复制出来
-  - 点击该行设置右边的铅笔图标，再用<kbd>Ctrl+A</kbd>全选复制
-- 粘贴到新建文本文件中，按<kbd>Alt+Z</kbd>开启自动换行。
+  - 点击该行设置右边的铅笔图标，再用<kbd>Ctrl</kbd>+<kbd>A</kbd>全选复制
+- 粘贴到新建文本文件中，按<kbd>Alt</kbd>+<kbd>Z</kbd>开启自动换行。
 - 观察最後的 `return` 语句之後的内容，类似 ``return `$(pencil) ${this.numberWithCommas(character)} 字符`;}``
 - 将 `character` 更改为想要的正则表达式id（例如 `han`），`字符` 两个字修改成你想要的描述
 - 将编辑後的内容重新粘贴到对应的设置项中
