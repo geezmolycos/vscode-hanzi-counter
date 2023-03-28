@@ -8,6 +8,10 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.5.1] - 2023-03-29
+
+- CJK 字符现在使用了分段器
+
 ## [1.5.0] - 2023-03-29
 
 - 加入新的正则名字修饰符，表示预先将文本规范化为 Unicode 标准化形式

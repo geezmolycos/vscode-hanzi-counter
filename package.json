@@ -9,7 +9,7 @@
     "regex"
   ],
   "description": "多功能文档字数统计，支持中文、日文、朝鲜/韩文，支持选区统计，点击即可高亮，也可用正则表达式自定义要统计的内容。\n\n中国語/日本語/朝鮮/韓国語文字数計算ツール。중국어/일본어/한국어/조선어 세기 도구.\n\nCustomizable word counter with great support of Chinese characters (Hanzi), Japanese and Korean. Supports count in selection. Supports highlighting. Use custom regexes to match any character type you want.",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "publisher": "geezmolycos",
   "engines": {
     "vscode": "^1.74.0"
@@ -93,7 +93,7 @@
             "hangul@g": "\\u{fdd0}[^\\u{fdd0}]*(?=[^\\u{fdd0}])(?=\\p{sc=Hangul})(?=\\p{L}).[^\\u{fdd0}]*",
             "simple_hangul_punct": "(?=\\p{scx=Han}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{N}).",
             "hangul_punct": "(?<=[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}](?:(?=\\p{scx=Han}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{N}).)*)(?=\\p{scx=Han}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{N}).|(?=\\p{scx=Han}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{N}).(?=(?:(?=\\p{scx=Han}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{N}).)*[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}])",
-            "cjk": "(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul})(?=\\p{L}|\\p{Nl}).",
+            "cjk@g": "\\u{fdd0}[^\\u{fdd0}]*(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul})(?=\\p{L}|\\p{Nl}).[^\\u{fdd0}]*",
             "simple_cjk_punct": "(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).",
             "cjk_punct": "(?<=(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul})(?=\\p{L}|\\p{Nl}).(?:(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).)*)(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).|(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).(?=(?:(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).)*(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul})(?=\\p{L}|\\p{Nl}).)"
           },
