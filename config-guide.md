@@ -60,16 +60,18 @@ flowchart TD
 
 正则表达式表位于设置项 `Counter: Regexes` 中。每条正则表达式均有一个名字，名字不重复。在此添加的正则表达式的名字中的 `id`，可以作为[模板中的变量](#模板表)。
 
-正则表达式的名字组成是 `<id>` 或 `<id>@[gws]<locale>` 其中 `<id>` 为模板中可用的变量名。若采用包含 `@` 的形式，则在该正则表达式匹配前，会先将待匹配文本由 `Intl.Segmenter` 分段，再将各段组合成字符串，分段过程如下：
+正则表达式的名字组成是 `<id>` 或 `<id>@[gws]<locale>@<nf>` 其中 `<id>` 为模板中可用的变量名。若采用包含 `@` 的形式，第一个 `@` 后的内容表示分段信息，第二个 `@` 后的内容表示标准化信息。两部分可以只有一部分，如果只想标准化，不想分段，则可以省略中间内容，直接在两个相连的 `@` 后写标准化形式名。标准化形式名可以是 `NFD` `NFC` `NFKD` `NFKC` （不区分大小写）。
+
+文字在用正则表达式匹配之前，如果指定了标准化形式，会先使用 `string.normalize` 方法将待匹配文字标准化为对应的 Unicode 标准化形式。如果还指定了分段方式，还会按以下方法用 `Intl.Segmenter` 分段：
 
 - 删除原字符串中所有 `U+FDD0`-`U+FDEF` 字符
-- 由 `[gws]` 和 `<locale>` 获取[分段器的参数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter/Segmenter#parameters)。`g`、`w`、`s` 分别代表 `granularity` 为 `grapheme`、`word`、`sentence`。`locale` 代表 `locales` 参数，也可以缺省。
+- 由 `[gws]` 和 `<locale>` 获取[分段器的参数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter/Segmenter#parameters)。`g`、`w`、`s` 分别代表 `granularity` 为 `grapheme`、`word`、`sentence`。`<locale>` 代表 `locales` 参数，也可以省略不写。
 - 调用 `segmenter.segment` 进行分段
 - 每段依据属性，若 `isWordLike`，在之前增加 `U+FDD1`，否则增加 `U+FDD0`，将所有段重新连接成字符串
 
 这样，正则表达式只需统计其中的 `U+FDD0` 和 `U+FDD1` 的个数，就能获取有多少个段的信息，还可以通过更复杂的表达式匹配更精细的内容。
 
-正则表达式启用了 `u` flag，推荐使用 [Unicode 属性匹配](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Unicode_Property_Escapes)，这样结果更加准确。可以参考默认设置中的项目。也给出一个示例，这是默认设置里匹配汉字的正则表达式：
+正则表达式启用了 `u` flag，推荐使用 [Unicode 属性匹配](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Unicode_Property_Escapes)，这样结果更加准确，浅显易懂。可以参考默认设置中的项目。也给出一个示例，这是默认设置里匹配汉字的正则表达式：
 
 `(?=\p{scx=Han})(?=\p{L}|\p{Nl}).`
 
@@ -140,37 +142,11 @@ flowchart TD
 
 状态栏模板会最先执行，因此可以通过状态栏模板初始化需要的变量和函数等。
 
-## (朝鲜语/韩语)字符(谚文)规则说明
-
-(朝鲜语/韩语)使用谚文作为主要书写系统。Unicode中，谚文可以使用音节形式和组合形式两种方法表示：音节形式即一个谚文方块字(音节)对应一个字符；而组合形式中，一个谚文方块字可由若干个部件字符(包括初声、中声、终声几类字符)组成。
-
-通过对不同类型字符区别对待，可以准确地统计出谚文文本方块字(音节)的个数。规则如下：
-
-|字符类型|正则|描述|
-|-|-|-|
-|音节和兼容字符|`[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}]`|包括所有 [Hangul Syllables](https://en.wikipedia.org/wiki/Hangul_Syllables)、[Hangul Compatibility Jamo](https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo) 中的字符，和 [Halfwidth and Fullwidth Forms](https://en.wikipedia.org/wiki/Halfwidth_and_Fullwidth_Forms_(Unicode_block)) 中的半角谚文字符|
-|初声L|`[\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-A](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-A) 的所有L类字符|
-|中声V|`[\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B) 的所有V类字符|
-|终声T|`[\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}]`|[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)) 和 [Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B) 的所有T类字符|
-
-参考：\
-<https://stackoverflow.com/questions/9928505/what-does-the-expression-x-match-when-inside-a-regex>\
-<https://stackoverflow.com/questions/53198407/is-there-a-regular-expression-which-matches-a-single-grapheme-cluster>
-
-- 音节和兼容字符算一个字
-- L算一个字
-- V前没有L，算一个字
-- T前没有V，算一个字
-
-合成後的正则表达式：
-
-`[\\u{ac00}-\\u{d7af}\\u{3130}-\\u{318f}\\u{ffa0}-\\u{ffdf}]|[\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}]|(?<![\\u{1100}-\\u{115f}\\u{a960}-\\u{a97f}])[\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}]|(?<![\\u{1160}-\\u{11a7}\\u{d7b0}-\\u{d7ca}])[\\u{11a8}-\\u{11ff}\\u{d7cb}-\\u{d7ff}]`
-
 ## Grapheme cluster boundary 和 Word boundary 规则说明
 
 Unicode grapheme cluster 是书写系统中[公认的「字符」](http://utf8everywhere.org/#characters)的[一种近似](https://unicode.org/reports/tr29/)。有组合符号的字符，虽然组合符号是多个 codepoints，但是整体是一个 grapheme cluster。
 
-Unicode 网站上有提供 [grapheme cluster 和 word 的规则](https://unicode.org/reports/tr29/)，javascript 中自带有 [`Intl.Segmenter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter) 用来将文本分隔为 grapheme cluster 和 word 的。该扩展利用了该API进行指定语言的分词分句，详情请参考配置编写教程（暂未编写，有空会做）。
+Unicode 网站上有提供 [grapheme cluster 和 word 的规则](https://unicode.org/reports/tr29/)，javascript 中自带有 [`Intl.Segmenter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Segmenter) 用来将文本分隔为 grapheme cluster 和 word 的。该扩展利用了该API进行指定语言的分词分句，详情请参考上文。
 
 ## 带标点符号和不带标点符号的说明
 

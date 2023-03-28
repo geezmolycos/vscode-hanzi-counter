@@ -32,9 +32,9 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 
 [<img alt="speed-comparison.png" src="images/speed-comparison.png" width="400px" />](comparison.md#性能对比)
 
-为了便于在图片上表示，将该扩展耗费时间全部归一化。字数多了该扩展花费的时间也会变多一些，但是增长相对其他扩展很小。
+为了便于在图片上表示，将该扩展耗费时间全部归一化。实际上字数多了该扩展花费的时间也会变多一些，但是增长相对其他扩展很小。
 
-**支持多语言，中日韩**
+**支持多语言：中日韩**
 
 默认配置有英简繁日韩，内容符合对应语言用户所需
 

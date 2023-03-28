@@ -38,7 +38,7 @@
           "scope": "language-overridable",
           "order": 1,
           "default": true,
-          "description": "Show counter on status bar. This configuration is overridable by language."
+          "description": "Show counter on status bar. This configuration is overridable by language.\n启用或禁用状态栏上显示的字数统计。(可给每个编程语言指定不同设置)"
         },
         "vscode-hanzi-counter.statusBar.alignment": {
           "type": "string",
@@ -49,14 +49,14 @@
             "right"
           ],
           "default": "right",
-          "description": "Place status bar item to left or right. Restart for changes to take effect."
+          "description": "Place status bar item to left or right. Restart for changes to take effect.\n将状态栏显示的字数统计放到左边还是右边。更改后需要重启。"
         },
         "vscode-hanzi-counter.statusBar.priority": {
           "type": "number",
           "scope": "window",
           "order": 3,
           "default": 105,
-          "description": "Status bar item priority. Restart for changes to take effect."
+          "description": "Status bar item priority. Restart for changes to take effect.\n状态栏显示的优先级。更改后需要重启。"
         },
         "vscode-hanzi-counter.counter.regexes": {
           "type": "object",
@@ -97,7 +97,7 @@
             "simple_cjk_punct": "(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).",
             "cjk_punct": "(?<=(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul})(?=\\p{L}|\\p{Nl}).(?:(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).)*)(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).|(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).(?=(?:(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul}|\\p{scx=Common})(?=\\p{P}|\\p{S}|\\p{Nd}|\\p{No}).)*(?=\\p{scx=Han}|\\p{scx=Hiragana}|\\p{scx=Katakana}|\\p{scx=Hangul})(?=\\p{L}|\\p{Nl}).)"
           },
-          "description": "Regexes for matching each type of words or characters to count. Those items can be used in templates. With flags `gus`. Restart for changes to take effect."
+          "description": "Regexes for matching each type of words or characters to count. Those items can be used in templates. With flags `gus`. Restart for changes to take effect. \n\n正则表达式表。更改后需要重启。"
         },
         "vscode-hanzi-counter.counter.templates": {
           "type": "object",
@@ -116,21 +116,21 @@
             "zh-hans": "{/* ==> 简体中文 Simplified Chinese <== */const prefix = '<table width=\"100%\"><tbody>';const suffix = '</tbody></table>';return prefix+ this.tableRow('单词:', spaced_word, '\"spaced_word\"')+ this.tableRow('非ASCII字符:', nonascii, '\"nonascii\"')+ this.tableRow('中文:', han + han_punct, '[[\"han\"],[],[\"han_punct\"],[],[],[],[]]')+ this.tableRow('中文(不含标点):', han, '\"han\"')+ this.tableRow('CJK字符:', cjk, '[[\"cjk\"],[\"han\"],[],[\"hiragana\"],[\"hangul\"],[\"katakana\"],[]]')+ this.tableRow('非空白字符:', nonwhite, '\"nonwhite\"')+ this.tableRow('UTF-8:', utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4, '[[\"utf8_1\"],[\"utf8_4\"],[],[],[\"utf8_3\"],[\"utf8_2\"],[]]', `${this.numberWithCommas(utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4)} <small>(${this.numberWithCommas(utf8_1)}/${this.numberWithCommas(utf8_2)}/${this.numberWithCommas(utf8_3)}/${this.numberWithCommas(utf8_4)})</small>`)+ this.tableRow('总字符数:', character)+ suffix + '\\n\\n'+ this.paging.generate('zh-hans');}",
             "zh-hant": "{/* ==> 繁體中文 Traditional Chinese <== */const prefix = '<table width=\"100%\"><tbody>';const suffix = '</tbody></table>';return prefix+ this.tableRow('單詞:', spaced_word, '\"spaced_word\"')+ this.tableRow('非ASCII字符:', nonascii, '\"nonascii\"')+ this.tableRow('中文:', han + han_punct, '[[\"han\"],[],[\"han_punct\"],[],[],[],[]]')+ this.tableRow('中文(不含標點):', han, '\"han\"')+ this.tableRow('CJK字符:', cjk, '[[\"cjk\"],[\"han\"],[],[\"hiragana\"],[\"hangul\"],[\"katakana\"],[]]')+ this.tableRow('非空白字符:', nonwhite, '\"nonwhite\"')+ this.tableRow('UTF-8:', utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4, '[[\"utf8_1\"],[\"utf8_4\"],[],[],[\"utf8_3\"],[\"utf8_2\"],[]]', `${this.numberWithCommas(utf8_1 + utf8_2*2 + utf8_3*3 + utf8_4*4)} <small>(${this.numberWithCommas(utf8_1)}/${this.numberWithCommas(utf8_2)}/${this.numberWithCommas(utf8_3)}/${this.numberWithCommas(utf8_4)})</small>`)+ this.tableRow('总字符數:', character)+ suffix + '\\n\\n'+ this.paging.generate('zh-hant');}"
           },
-          "markdownDescription": "Each item is a Javascript expression or code block that returns a markdown string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect."
+          "markdownDescription": "Each item is a Javascript expression or code block that returns a markdown string. Items of `#vscode-hanzi-counter.counter.regexes#` can be used as variables. Restart for changes to take effect.\n\n**This can execute arbitrary code and is NOT sandboxed. Please make sure any code used here is safe.**\n\n模板表。更改后需要重启。\n\n**该项设置可以包含任意代码，请自行确认代码安全性。**"
         },
         "vscode-hanzi-counter.template.statusBarTemplateName": {
           "type": "string",
           "scope": "language-overridable",
           "order": 11,
           "default": "status-bar-zh",
-          "description": "Which template to use for status bar text."
+          "description": "Which template to use for status bar text.\n要使用的状态栏模板名字。"
         },
         "vscode-hanzi-counter.template.tooltipTemplateName": {
           "type": "string",
           "scope": "language-overridable",
           "order": 12,
           "default": "overview",
-          "description": "Which template to use for default status bar item tooltip."
+          "description": "Which template to use for default status bar item tooltip.\n弹出窗口要使用的模板。"
         }
       }
     }

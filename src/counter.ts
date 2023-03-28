@@ -70,6 +70,7 @@ export class Counter {
             }
             // has normalization form modifier
             if (result.length >= 3 && result[2].length > 0){
+                result[2] = result[2].toLowerCase();
                 if (result[2] !== 'nfc' && result[2] !== 'nfd' && result[2] !== 'nfkd' && result[2] !== 'nfkc'){
                     throw new Error(`invalid normalization form "${result[2]}"`);
                 }
