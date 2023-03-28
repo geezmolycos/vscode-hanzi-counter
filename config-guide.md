@@ -28,6 +28,31 @@
 
 首先，在设置中搜索 `@id:vscode-hanzi-counter.statusBar.enabled`，将 `Status Bar: Enabled` 禁用，这样会让扩展全局禁用。其次，再搜索 `@lang:plaintext @id:vscode-hanzi-counter.statusBar.enabled`，将其启用（如果已经勾选，就先取消再勾选，左侧就会多一条竖线），这样就启用了纯文本的字数统计。启用 Markdown 的字数统计，只需搜索 `@lang:markdown @id:vscode-hanzi-counter.statusBar.enabled`。
 
+## 添加和删除显示的项目
+
+> Q: 弹出窗口显示的东西太多了，看不过来怎么办？\
+> Q: 我不想让它显示xxx的字数。
+
+- 找出将你现在使用的模板名字，查看设置 `Template: Tooltip Template Name` 寻找该项名字对应的模板
+- 例如该项是 `zh-hans`，则将 `Counter: Templates` 中的 `zh-hans` 项复制出来
+  - 点击该行设置右边的铅笔图标，再用<kbd>Ctrl+A</kbd>全选复制
+- 粘贴到新建文本文件中，按<kbd>Alt+Z</kbd>开启自动换行
+- 例如要删除 `非ASCII字符`，则找到 `+ this.tableRow('非ASCII字符:', nonascii, '"nonascii"')` 并删除
+- 将编辑後的内容重新粘贴到对应的设置项中
+- 重启 VS Code，如果没有报错，就可以正常使用了
+
+> Q: 我不想在状态栏上显示总字符数，我想显示中文字数。\
+> Q: 我想让状态栏上显示其他东西。
+
+- 找出你现在使用的状态栏模板名字，查看设置 `Template: Status Bar Template Name` 寻找该项名字对应的模板。
+- 例如该项是 `status-bar-zh`，则将 `Counter: Templates` 中的 `status-bar-zh` 项复制出来
+  - 点击该行设置右边的铅笔图标，再用<kbd>Ctrl+A</kbd>全选复制
+- 粘贴到新建文本文件中，按<kbd>Alt+Z</kbd>开启自动换行。
+- 观察最後的 `return` 语句之後的内容，类似 ``return `$(pencil) ${this.numberWithCommas(character)} 字符`;}``
+- 将 `character` 更改为想要的正则表达式id（例如 `han`），`字符` 两个字修改成你想要的描述
+- 将编辑後的内容重新粘贴到对应的设置项中
+- 重启 VS Code，如果没有报错，就可以正常使用了
+
 ## 扩展基本工作流程
 
 ```mermaid

@@ -11,7 +11,7 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"${workspaceFolder}/vsc-extension-quickstart.md"
+				"${workspaceFolder}/comparison.md"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js",
