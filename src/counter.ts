@@ -96,6 +96,7 @@ export class Counter {
                 ? vscode.StatusBarAlignment.Left : vscode.StatusBarAlignment.Right,
             configuration.get('vscode-hanzi-counter.statusBar.priority') ?? 105); // default left of text attributes(ln, col, spaces, encoding, etc)
         this._statusBarItem.name = 'Hanzi Counter';
+        this._statusBarItem.accessibilityInformation = {label: 'Hanzi Counter'};
 
         // create decoration type
         this._decorationTypes = [
@@ -129,9 +130,13 @@ export class Counter {
     public updateStatusBarItem(text?: string, tooltipText?: string){
         if (text){
             this._statusBarItem.text = text;
+            this._statusBarItem.accessibilityInformation = {label: text};
         }
         if (tooltipText){
-            let ms = new vscode.MarkdownString(tooltipText);
+            let ms = new vscode.MarkdownString('<!--[Fake link](#)-->\n' + tooltipText);
+            // The "Fake link" part is to let vscode think it contains a markdown link
+            // so that the tooltip pop-up will stay open on mouse leave
+            // Reference: https://github.com/microsoft/vscode/blob/d1aa00acef8b2cfa88621c448b8fd8cd034f60a9/src/vs/workbench/services/hover/browser/hoverWidget.ts#L205
             ms.isTrusted = true;
             ms.supportHtml = true;
             ms.supportThemeIcons = true;

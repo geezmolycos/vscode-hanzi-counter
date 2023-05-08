@@ -8,6 +8,11 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.5.2] - 2023-05-08
+
+- 在工具提示里面添加了虚拟的链接，供 VS Code 检测，以使鼠标离开工具提示时不消失 (fix #2)
+- 设置了状态栏项目的 `accessibilityInformation` 属性，方便屏幕阅读器阅读
+
 ## [1.5.1] - 2023-03-29
 
 - CJK 字符现在使用了分段器
