@@ -30,6 +30,18 @@
 
 ## 添加和删除显示的项目
 
+> Q: 我使用之前的版本，里面有 UTF-8 大小，还有显示某某信息，现在怎么没有了？\
+> Q: 我想自己添加一条显示信息
+
+- 找出将你现在使用的模板名字，查看设置 `Template: Tooltip Template Name` 寻找该项名字对应的模板
+- 例如该项是 `zh-hans`，则将 `Counter: Templates` 中的 `zh-hans` 项复制出来
+  - 点击该行设置右边的铅笔图标，再用<kbd>Ctrl+A</kbd>全选复制
+- 粘贴到新建文本文件中，按<kbd>Alt+Z</kbd>开启自动换行
+- 仿照现有的类似 `+ this.tableRow('非ASCII字符:', nonascii, '"nonascii"')` 的格式，自己编写一条，追加到已经有的后面
+  - 参数分别为名字、正则表达式名，高亮参数
+  - 在 [templates 目录](./templates/)下可以找到 `tableRow` 函数详细的定义，以及各模板便于观看的源码
+  - `tableRow` 函数，在[状态栏模板](./templates/status-bar-zh.js)中
+
 > Q: 弹出窗口显示的东西太多了，看不过来怎么办？\
 > Q: 我不想让它显示xxx的字数。
 
@@ -40,6 +52,7 @@
 - 例如要删除 `非ASCII字符`，则找到 `+ this.tableRow('非ASCII字符:', nonascii, '"nonascii"')` 并删除
 - 将编辑後的内容重新粘贴到对应的设置项中
 - 重启 VS Code，如果没有报错，就可以正常使用了
+
 
 > Q: 我不想在状态栏上显示总字符数，我想显示中文字数。\
 > Q: 我想让状态栏上显示其他东西。

@@ -6,9 +6,10 @@
     this.numberWithCommas = (x) => {
         return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
     };
-    this.tableRow = (str, value, hlit, display) => (
+    this.bigsmall = (x, is) => is ? '<small>' + x + '</small>' : x;
+    this.tableRow = (str, value, hlit, display, small) => (
         '<tr>'
-        + `<td>${str}</td>`
+        + `<td>${this.bigsmall(str, small)}</td>`
         + (
             hlit && value < this.hlitMax
             ? `<td align="right"><a href="command:vscode-hanzi-counter.highlight?%5B${encodeURIComponent(hlit)}%5D">${display || this.numberWithCommas(value)}</a></td>`

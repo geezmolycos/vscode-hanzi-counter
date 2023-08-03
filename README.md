@@ -10,6 +10,8 @@ Customizable word counter with great support of Chinese characters (Hanzi), Japa
 
 **[中文介绍](#中文介绍--chinese-description)** / **[English description](#english-description--英文介绍)**
 
+**2023-08-03 更新的 1.6.0 版本为了显示更加简洁，去掉了一些次要的项目，和 UTF-8 显示，如果你认为有必要，可以按[配置教程](./config-guide.md)添加回来**
+
 # 中文介绍 / Chinese Description
 
 ## 功能简介
