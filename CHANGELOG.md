@@ -8,6 +8,10 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.6.1] - 2023-08-18
+
+- 修复了西文句数包含空行的问题 (#5)
+
 ## [1.6.0] - 2023-08-03
 
 - 给默认状态栏模板中的 `tableRow` 函数添加了可选 `small` 参数，方便将文字变小，节省横向空间。
