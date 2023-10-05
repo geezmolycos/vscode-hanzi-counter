@@ -4,6 +4,8 @@ import * as vscode from 'vscode';
 import {Counter} from './counter';
 import {DocumentCounter} from './documentCounter';
 
+const MAX_COUNT_LENGTH = 3000000; // 3M
+
 export class CounterController {
 
     private _counter: Counter;
@@ -41,7 +43,10 @@ export class CounterController {
     }
 
     private _onDidOpenTextDocument(document: vscode.TextDocument) {
-        this._documentCounters.set(document, new DocumentCounter(this._counter, document));
+        if (document.getText().length <= MAX_COUNT_LENGTH && document.languageId !== 'code-text-binary'){
+            // very large file or binary file is not counted
+            this._documentCounters.set(document, new DocumentCounter(this._counter, document));
+        }
     }
     
     private _onDidCloseTextDocument(document: vscode.TextDocument) {
@@ -49,8 +54,18 @@ export class CounterController {
     }
     
     private _onDidChangeTextDocument(event: vscode.TextDocumentChangeEvent) {
-        for (let change of event.contentChanges){
-            this._documentCounters.get(event.document)?.onContentChange(change);
+        if (event.document.getText().length > MAX_COUNT_LENGTH || event.document.languageId === 'code-text-binary'){
+            // grow big, remove record
+            this._documentCounters.delete(event.document);
+        } else if (!this._documentCounters.has(event.document)){
+            // previously big, but currently small
+            // re-add document
+            this._documentCounters.set(event.document, new DocumentCounter(this._counter, event.document));
+        } else {
+            // already in record
+            for (let change of event.contentChanges){
+                this._documentCounters.get(event.document)?.onContentChange(change);
+            }
         }
         this._updateStatusBarItem();
         this._counter.removeHighlight();
@@ -81,6 +96,10 @@ export class CounterController {
     private _updateStatusBarItem(){
         let currentDocument = vscode.window.activeTextEditor?.document;
         if (currentDocument){
+            if (!this._documentCounters.has(currentDocument)){ // very large file is not counted
+                this._counter.changeStatusBarItem(false);
+                return;
+            }
             let selections = vscode.window.activeTextEditor!.selections;
             let allEmpty = true;
             for (let selection of selections){ // handle multi-selection

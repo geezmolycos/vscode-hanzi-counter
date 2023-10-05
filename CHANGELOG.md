@@ -8,6 +8,10 @@ All notable changes to the "vscode-hanzi-counter" extension will be documented i
 - 日本语较准确的「原稿用紙換算」
 - 发布到open vsx上
 
+## [1.6.2] - 2023-10-05
+
+- 不统计过大的文件(>3M字符)或二进制文件，因为会占用过多CPU时间，使extension host假死 (#6)
+
 ## [1.6.1] - 2023-08-18
 
 - 修复了西文句数包含空行的问题 (#5)
